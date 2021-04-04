@@ -795,10 +795,7 @@ Prefix : 「 ${prefix} 」
 				const pingnya = `*${teks}Speed: ${latensi.toFixed(4)} Second*`
 				fakegroup(pingnya)
 				})
-				break   
-    case 'x':
-        return hexa.sendMessage(from, JSON.stringify(eval(args.join('')),null,'\t'),text, {quoted: mek})
-        break           
+				break         
 default:
 if (budy.startsWith('x')){
 return hexa.sendMessage(from, JSON.stringify(eval(budy.slice(2)),null,'\t'),text, {quoted: mek})
