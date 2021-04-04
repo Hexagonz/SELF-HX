@@ -1,0 +1,47 @@
+{
+  "name": "HEXAGONZ",
+  "version": "1.0.0",
+  "description": "HEXA",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "@adiwajshing/baileys": "^3.4.1",
+    "async": "^2.4.1",
+    "awesome-phonenumber": "^2.48.0",
+    "axios": "^0.21.1",
+    "brainly-scraper": "^1.0.3",
+    "browser-id3-writer": "^4.4.0",
+    "cfonts": "^2.9.0",
+    "child_process": "^1.0.2",
+    "dotenv": "^8.2.0",
+    "emoji-api": "^1.0.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "g-i-s": "^2.1.6",
+    "got": "^11.8.2",
+    "instagram-url-direct": "^1.0.5",
+    "jsdom": "^16.5.2",
+    "moment-timezone": "^0.5.33",
+    "performance-now": "^2.1.0",
+    "request": "^2.88.2",
+    "yt-search": "^2.7.6"
+  },
+  "scripts": {
+    "start": "node index",
+    "test": "supervisor index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hexagonz"
+  },
+  "keywords": [
+    "Wasu"
+  ],
+  "author": "HEXAGON",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hexagonz"
+  },
+  "homepage": "https://github.com/Hexagonz"
+}
