@@ -13,7 +13,7 @@
 </p>
 
 ## CARA INSTALL DI TERMUX
-```
+```bash
 > pkg install nodejs && pkg install git
 > git clone https://github.com/Hexagonz/SELF-HX
 > cd SELF-HX
@@ -21,7 +21,7 @@
 > npm start/node index
 ```
 ## CARA INSTALL DI LAPTOP
-```
+```bash
 > git clone https://github.com/Hexagonz/SELF-HX 
 > cd SELF-HX
 > npm i
