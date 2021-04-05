@@ -31,7 +31,7 @@ const InstaClient = new Insta();
 const { EmojiAPI } = require("emoji-api");
 const emoji = new EmojiAPI()
 const Fb = require('fb-video-downloader');
-const instagramGetUrl = require("instagram-url-direct")
+const ig = require('insta-fetcher')
 const phoneNum = require('awesome-phonenumber')
 const gis = require('g-i-s');
 const got = require("got");
@@ -764,16 +764,17 @@ Prefix : 「 ${prefix} 」
 			hexa.sendMessage(from, teks, text,{quoted:mek,detectLinks: false})                        
             })              
 			break
-    case prefix+ 'ig':
-            if (args.length === 0) return fakegroup('Linknya?')
-			let links = await instagramGetUrl(`${args.join(' ')}`)
-           .then(res =>{
-           	tek = `${res.url_list}`
-           	teks = `*DONE*\n\n*Link Dari* : ${args.join(' ')}`
-           	sendMediaURL(from,tek,teks)
-           })
-			console.log(links)
-			break
+            case prefix+'ig':
+            if (!q) return fakegroup('Linknya?')
+            te = args.join(' ')
+            ig.fetchPost(`${te}`).then(res => {
+            cap = `*Username* : ${res.username}\n*Name* : ${res.name}\n*Like* : ${res.likes}\n*Caption* : ${res.caption}`
+            for (let Y of res.links)
+            tek = `${Y.url}`
+            sendMediaURL(from,tek,cap)
+            console.log(tek)
+            })
+            break
     case prefix+ 'igstalk':
             if (!q) return fakegroup('Usernamenya?')
             var username = args.join(' ')
