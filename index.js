@@ -273,6 +273,7 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}ytmp3_ <link>
 ► _${prefix}ytmp4_ <link>
 ► _${prefix}ig_ <link>
+► _${prefix}fb_ <link>
 ► _${prefix}brainly_ <query>
 ► _${prefix}image_ <query>
 
