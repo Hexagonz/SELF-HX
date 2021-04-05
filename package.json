@@ -15,6 +15,7 @@
     "browser-id3-writer": "^4.4.0",
     "cfonts": "^2.9.0",
     "child_process": "^1.0.2",
+    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "emoji-api": "^1.0.2",
     "fluent-ffmpeg": "^2.1.2",
@@ -25,6 +26,7 @@
     "moment-timezone": "^0.5.33",
     "performance-now": "^2.1.0",
     "request": "^2.88.2",
+    "spinnies": "^0.5.1",
     "yt-search": "^2.7.6"
   },
   "scripts": {
