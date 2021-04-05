@@ -1,3 +1,4 @@
+
 //MAKASIH DAH PAKE 
 //HEXAGON NGENTOD EMANG
 const
@@ -25,8 +26,11 @@ const { spawn, exec, execSync } = require("child_process")
 const fs = require("fs")
 const axios = require("axios")
 const ffmpeg = require('fluent-ffmpeg')
+const Insta = require('scraper-instagram');
+const InstaClient = new Insta();
 const { EmojiAPI } = require("emoji-api");
 const emoji = new EmojiAPI()
+const Fb = require('fb-video-downloader');
 const instagramGetUrl = require("instagram-url-direct")
 const phoneNum = require('awesome-phonenumber')
 const gis = require('g-i-s');
@@ -264,6 +268,7 @@ Prefix : 「 ${prefix} 」
 
 *</DOWNLOAD>*
 ► _${prefix}ytsearch_ <query>
+► _${prefix}igstalk_ <query>
 ► _${prefix}play_ <query>
 ► _${prefix}ytmp3_ <link>
 ► _${prefix}ytmp4_ <link>
@@ -457,7 +462,7 @@ Prefix : 「 ${prefix} 」
                         if (Number(filesize) >= 100000) return sendMediaURL(from, thumb, `*PLAY MUSIC*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam mektuk link_`)
                         const captions = `*PLAY MUSIC*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
                         sendMediaURL(from, thumb, captions)
-                        await sendMediaURL(from, dl_link).catch(() => reply(mess.error.api))
+                        await sendMediaURL(from, dl_link).catch(() => reply('error'))
                         })                
                         })
                         } catch (err) {
@@ -622,15 +627,15 @@ Prefix : 「 ${prefix} 」
 			reply(mess.wait)
 			encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
 			media = await hexa.downloadAndSaveMediaMessage(encmedia)
-					ran = getRandom('.png')
-					exec(`ffmpeg -i ${media} ${ran}`, (err) => {
-					fs.unlinkSync(media)
-					if (err) return reply('Yah gagal, coba ulangi ^_^')
-					buffer = fs.readFileSync(ran)
-					fakethumb(buffer,'NIH')
-					fs.unlinkSync(ran)
-					})
-					break
+			ran = getRandom('.png')
+			exec(`ffmpeg -i ${media} ${ran}`, (err) => {
+			fs.unlinkSync(media)
+			if (err) return reply('Yah gagal, coba ulangi ^_^')
+			buffer = fs.readFileSync(ran)
+			fakethumb(buffer,'NIH')
+			fs.unlinkSync(ran)
+			})
+			break
 	case prefix+ 'ytsearch':
 			if (args.length < 1) return reply('Tolong masukan query!')
 			var srch = args.join('');
@@ -683,59 +688,57 @@ Prefix : 「 ${prefix} 」
             reply(`Kirim gambar dengan caption ${prefix}sethumb`)
           	}
 			break	
-	case `${prefix}ytmp4`:
+	case prefix+ 'ytmp4':
 			if (args.length === 0) return reply(`Kirim perintah *${prefix}ytmp4 [linkYt]*`)
 			let isLinks2 = args[0].match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)
 			if (!isLinks2) return reply(mess.error.Iv)
 				try {
 				reply(mess.wait)
-					ytv(args[0])
-					.then((res) => {
-					const { dl_link, thumb, title, filesizeF, filesize } = res
-					axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
-					.then((a) => {
-					if (Number(filesize) >= 40000) return sendMediaURL(from, thumb, `*YTMP 4!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam mektuk link_`)
-					const captionsYtmp4 = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP4\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-					sendMediaURL(from, thumb, captionsYtmp4)
-					sendMediaURL(from, dl_link).catch(() => reply(mess.error.api))
-					})
-			
-					})
-					} catch (err) {
-					reply(mess.error.api)
-					}
-					break
+				ytv(args[0])
+				.then((res) => {
+				const { dl_link, thumb, title, filesizeF, filesize } = res
+				axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
+				.then((a) => {
+				if (Number(filesize) >= 40000) return sendMediaURL(from, thumb, `*YTMP 4!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam mektuk link_`)
+				const captionsYtmp4 = `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP4\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+				sendMediaURL(from, thumb, captionsYtmp4)
+				sendMediaURL(from, dl_link).catch(() => reply(mess.error.api))
+				})		
+				})
+				} catch (err) {
+			    reply(mess.error.api)
+				}
+				break
 	case prefix+ 'emoji':
 			if (!q) return fakegroup('emojinya?')
 			qes = args.join(' ')
 			emoji.get(`${qes}`).then(emoji => {
-				teks = `${emoji.images[4].url}`
-    			sendStickerFromUrl(from,`${teks}`)	
-    			console.log(teks)
-   				})
-    			break
+			teks = `${emoji.images[4].url}`
+    		sendStickerFromUrl(from,`${teks}`)	
+    		console.log(teks)
+   			})
+    		break
 	case prefix+ 'ytmp3':
 			if (args.length === 0) return reply(`Kirim perintah *${prefix}ytmp3 [linkYt]*`)
 			let isLinks = args[0].match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)
 			if (!isLinks) return reply(mess.error.Iv)
 				try {
-					reply(mess.wait)
-					yta(args[0])
-					.then((res) => {
-						const { dl_link, thumb, title, filesizeF, filesize } = res
-						axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
-						.then((a) => {
-						if (Number(filesize) >= 30000) return sendMediaURL(from, thumb, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam mektuk link_`)
-						const captions = `*YTMP3*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-						sendMediaURL(from, thumb, captions)
-						sendMediaURL(from, dl_link).catch(() => reply(mess.error.api))
-						})
-
-						})
-						} catch (err) {
-							reply(mess.error.api)
-						}
-					break
+				reply(mess.wait)
+				yta(args[0])
+				.then((res) => {
+				const { dl_link, thumb, title, filesizeF, filesize } = res
+				axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
+				.then((a) => {
+			    if (Number(filesize) >= 30000) return sendMediaURL(from, thumb, `*Data Berhasil Didapatkan!*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam mektuk link_`)
+				const captions = `*YTMP3*\n\n*Title* : ${title}\n*Ext* : MP3\n*Size* : ${filesizeF}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
+				sendMediaURL(from, thumb, captions)
+				sendMediaURL(from, dl_link).catch(() => reply(mess.error.api))
+				})
+				})
+				} catch (err) {
+				reply(mess.error.api)
+				}
+				break
     case prefix+ 'image'	:
             if (args.length < 1) return reply('Masukan teks!')
             const gimg = args[0];
@@ -769,33 +772,54 @@ Prefix : 「 ${prefix} 」
            	sendMediaURL(from,tek,teks)
            })
 			console.log(links)
-			break         
+			break
+    case prefix+ 'igstalk':
+            if (!q) return fakegroup('Usernamenya?')
+            var username = args.join(' ')
+            InstaClient.getProfile(username)
+            .then(Y => {
+            var ten = `${Y.pic}`
+            teks = `*ID* : ${Y.id}\n*Username* : ${args.join('')}\n*Bio* : ${Y.bio}\n*Followers* : ${Y.followers}\n*Following* : ${Y.following}\n*Private* : ${Y.private}\n*Verified* : ${Y.verified}\n\n*Link* : ${Y.link}`
+            sendMediaURL(from,ten,teks)
+            }) 
+            break  
+    case prefix+ 'fb':
+            if (!q) return reply('Linknya?')
+            te = args.join(' ')
+            fakestatus(mess.wait)
+            Fb.getInfo(`${te}`)
+            .then(G => {
+            ten = `${G.download.sd}`
+            tek = `${G.title}`
+            sendMediaURL(from,ten,`*Title* : ${tek}\n\n*Link* : ${ten}`)
+            })
+            break    
 	case prefix+ 'term':
 			if (!q) return fakegroup(mess.wrongFormat)
 			exec(q, (err, stdout) => {
-				if (err) return fakegroup(`SELF-BOT:~ ${err}`)
-				if (stdout) {
-					fakegroup(stdout)
-					}
-				})
-				break    
+			if (err) return fakegroup(`SELF-BOT:~ ${err}`)
+			if (stdout) {
+			fakegroup(stdout)
+			}
+			})
+		    break    
     case prefix+ 'runtime':
     case prefix+ 'test':
-        run = process.uptime() 
-        teks = `${kyun(run)}`
-        fakegroup(teks)
-        break  
+            run = process.uptime() 
+            teks = `${kyun(run)}`
+            fakegroup(teks)
+            break  
 	case prefix+ 'speed':
 	case prefix+ 'ping':
 			const timestamp = speed();
 			const latensi = speed() - timestamp
 			exec(`neofetch --stdout`, (error, stdout, stderr) => {
-				const child = stdout.toString('utf-8')
-				const teks = child.replace(/Memory:/, "Ram:")
-				const pingnya = `*${teks}Speed: ${latensi.toFixed(4)} Second*`
-				fakegroup(pingnya)
-				})
-				break         
+			const child = stdout.toString('utf-8')
+			const teks = child.replace(/Memory:/, "Ram:")
+			const pingnya = `*${teks}Speed: ${latensi.toFixed(4)} Second*`
+			fakegroup(pingnya)
+			})
+			break            
 default:
 if (budy.startsWith('x')){
 return hexa.sendMessage(from, JSON.stringify(eval(budy.slice(2)),null,'\t'),text, {quoted: mek})
