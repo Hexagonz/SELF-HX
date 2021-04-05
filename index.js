@@ -26,11 +26,8 @@ const { spawn, exec, execSync } = require("child_process")
 const fs = require("fs")
 const axios = require("axios")
 const ffmpeg = require('fluent-ffmpeg')
-const Insta = require('scraper-instagram');
-const InstaClient = new Insta();
 const { EmojiAPI } = require("emoji-api");
 const emoji = new EmojiAPI()
-const Fb = require('fb-video-downloader');
 const instagramGetUrl = require("instagram-url-direct")
 const phoneNum = require('awesome-phonenumber')
 const gis = require('g-i-s');
@@ -773,28 +770,7 @@ Prefix : 「 ${prefix} 」
            	sendMediaURL(from,tek,teks)
            })
 			console.log(links)
-			break
-    case prefix+ 'igstalk':
-            if (!q) return fakegroup('Usernamenya?')
-            var username = args.join(' ')
-            InstaClient.getProfile(username)
-            .then(Y => {
-            var ten = `${Y.pic}`
-            teks = `*ID* : ${Y.id}\n*Username* : ${args.join('')}\n*Bio* : ${Y.bio}\n*Followers* : ${Y.followers}\n*Following* : ${Y.following}\n*Private* : ${Y.private}\n*Verified* : ${Y.verified}\n\n*Link* : ${Y.link}`
-            sendMediaURL(from,ten,teks)
-            }) 
-            break  
-    case prefix+ 'fb':
-            if (!q) return reply('Linknya?')
-            te = args.join(' ')
-            fakestatus(mess.wait)
-            Fb.getInfo(`${te}`)
-            .then(G => {
-            ten = `${G.download.sd}`
-            tek = `${G.title}`
-            sendMediaURL(from,ten,`*Title* : ${tek}\n\n*Link* : ${ten}`)
-            })
-            break    
+			break  
 	case prefix+ 'term':
 			if (!q) return fakegroup(mess.wrongFormat)
 			exec(q, (err, stdout) => {
