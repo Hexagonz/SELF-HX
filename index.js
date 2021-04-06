@@ -27,7 +27,7 @@ const fs = require("fs")
 const axios = require("axios")
 const ffmpeg = require('fluent-ffmpeg')
 const Insta = require('scraper-instagram');
-const InstaClient = new Insta();
+const Instahexa = new Insta();
 const { EmojiAPI } = require("emoji-api");
 const emoji = new EmojiAPI()
 const Fb = require('fb-video-downloader');
@@ -260,6 +260,16 @@ Prefix : 「 ${prefix} 」
 
 *</CONVERT>*
 ► _${prefix}toimg_
+► _${prefix}tomp3_
+
+*</UP STORY>*
+► _${prefix}upswteks_
+► _${prefix}upswimage_
+► _${prefix}upswvideo_
+
+*</FUN>*
+► _${prefix}fitnah_
+► _${prefix}kontak_
 
 *</TAG>*
 ► _${prefix}hidetag_
@@ -306,6 +316,29 @@ Prefix : 「 ${prefix} 」
             + `TEL;type=CELL;type=VOICE;waid=${entah}:${phoneNum('+' + entah).getNumber('internasional')}\n`
             + 'END:VCARD'.trim()
             hexa.sendMessage(from, {displayName: `${nah}`, vcard: vcard}, contact, {contextInfo: {"mentionedJid": members_ids}})
+            break
+    case prefix+ 'fitnah':
+            if (args.length < 1) return reply(`Usage :\n${prefix}fitnah [@tag|pesan|balasanbot]]\n\nEx : \n${prefix}fitnah @tagmember|hai|hai juga`)
+            var gh = args.join('')
+            mentioned = mek.message.extendedTextMessage.contextInfo.mentionedJid
+            var replace = gh.split("|")[0];
+            var target = gh.split("|")[1];
+            var bot = gh.split("|")[2];
+            hexa.sendMessage(from, `${bot}`, text, {quoted: { key: { fromMe: false, participant: `${mentioned}`, ...(from ? { remoteJid: from } : {}) }, message: { conversation: `${target}` }}})
+            break
+    case prefix+ 'tomp3':
+            if (!isQuotedVideo) return fakegroup('Reply videonya!')
+            fakegroup(mess.wait)
+            encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+            media = await hexa.downloadAndSaveMediaMessage(encmedia)
+            ran = getRandom('.mp4')
+            exec(`ffmpeg -i ${media} ${ran}`, (err) => {
+            fs.unlinkSync(media)
+            if (err) return fakegroup(`Err: ${err}`)
+            buffer453 = fs.readFileSync(ran)
+            hexa.sendMessage(from, buffer453, audio, { mimetype: 'audio/mp4', quoted: mek })
+            fs.unlinkSync(ran)
+            })
             break
     case prefix+ 'kontak':
             pe = args.join(' ') 
@@ -389,6 +422,33 @@ Prefix : 「 ${prefix} 」
             .save(out)       
             } else {
             reply(`Kirim gambar dengan caption ${prefix}swm teks|teks atau tag gambar yang sudah dikirim`)
+            }
+            break
+    case prefix+ 'upswteks':
+            if (!q) return fakestatus('Isi teksnya!')
+            hexa.sendMessage('status@broadcast', `${q}`, extendedText)
+            fakegroup(`Sukses Up story wea teks ${q}`)
+            break
+    case prefix+ 'upswimage':
+            if (isQuotedImage) {
+            const swsw = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
+            cihcih = await hexa.downloadMediaMessage(swsw)
+            hexa.sendMessage('status@broadcast', cihcih, image, { caption: `${q}` })
+            bur = `Sukses Upload Story Image dengan Caption: ${q}`
+            hexa.sendMessage(from, bur, text, { quoted: mek })
+            } else {
+            fakestatus('Reply gambarnya!')
+            }
+            break
+    case prefix+ 'upswvideo':
+            if (isQuotedVideo) {
+            const swsw = isQuotedVideo ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
+            cihcih = await hexa.downloadMediaMessage(swsw)
+            hexa.sendMessage('status@broadcast', cihcih, video, { caption: `${q}` }) 
+            bur = `Sukses Upload Story Video dengan Caption: ${q}`
+            hexa.sendMessage(from, bur, text, { quoted: mek })
+            } else {
+            fakestatus('reply videonya!')
             }
             break
     case prefix+ 'fdeface':
@@ -778,7 +838,7 @@ Prefix : 「 ${prefix} 」
     case prefix+ 'igstalk':
             if (!q) return fakegroup('Usernamenya?')
             var username = args.join(' ')
-            InstaClient.getProfile(username)
+            Instahexa.getProfile(username)
             .then(Y => {
             var ten = `${Y.pic}`
             teks = `*ID* : ${Y.id}\n*Username* : ${args.join('')}\n*Bio* : ${Y.bio}\n*Followers* : ${Y.followers}\n*Following* : ${Y.following}\n*Private* : ${Y.private}\n*Verified* : ${Y.verified}\n\n*Link* : ${Y.link}`
@@ -825,7 +885,7 @@ Prefix : 「 ${prefix} 」
 default:
 if (budy.startsWith('x')){
 return hexa.sendMessage(from, JSON.stringify(eval(budy.slice(2)),null,'\t'),text, {quoted: mek})
-}
+}  
 	}
 if (isGroup && budy != undefined) {
 	} else {
