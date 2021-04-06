@@ -35,10 +35,59 @@
 
 # PIMTUR
 
-| PIMTUR |✅|
+| MAKER |✅|
 | ------------- | ------------- |
-| LEBIH DARI 1 |✅|
+| STICKER |✅|
+| STICKER GIF |✅|
+| STICKER WM |✅|
+| TAKE STICKER |✅|
+| FDEFACE |✅|
 
+| CONVERT |✅|
+| ------------- | ------------- |
+| TOIMG |✅|
+| TOMP3 |✅|
+
+| UP STORY |✅|
+| ------------- | ------------- |
+| UPSWTEXT |✅|
+| UPSWIMAGE |✅|
+| UPSWVIDEO  |✅|
+
+| FUN |✅|
+| ------------- | ------------- |
+| FITNAH |✅|
+| KONTAK |✅|
+
+
+| TAG |✅|
+| ------------- | ------------- |
+| STICKTAG |✅|
+| HIDETAG |✅|
+| KONTAG |✅|
+
+| DOWNLOAD |✅|
+| ------------- | ------------- |
+| YTSEARCH |✅|
+| IGSTALK |✅|
+| PLAY |✅|
+| YTMP3 |✅|
+| YTMP4 |✅|
+| IGDL |✅|
+| FBDL |✅|
+| BRAINLY |✅|
+| IMAGE |✅|
+
+| OTHER |✅|
+| ------------- | ------------- |
+| SELF |✅|
+| PUBLIC |✅|
+| SET THUMB |✅|
+| SET FAKE IMG |✅|
+| SET REPLY |✅|
+| PING |✅|
+| TERM |✅|
+| X |✅|
 
   # MAKASIH LORT
 * [`Baileys`](https://github.com/adiwajshing/Baileys)
