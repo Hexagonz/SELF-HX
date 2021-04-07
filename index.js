@@ -55,24 +55,27 @@ hexa.on('qr', qr => {
 	qrcode.generate(qr, { small: true })
 	console.log(`[ ${time} ] SCAN QR`)
 })
-hexa.on('credentials-updated', () => {
+hexa.on('open', () => {
 	const authInfo = hexa.base64EncodedAuthInfo()
-	console.log(`credentials updated!`)
+	console.log(`Succes`)
 	fs.writeFileSync('./session.json', JSON.stringify(authInfo, null, '\t'))
 })
 fs.existsSync('./session.json') && hexa.loadAuthInfo('./session.json')
 hexa.connect();
 //=================================================//
-hexa.on('message-new', async (mek) => {
+hexa.on('chat-update', async (mek) => {
 	try {
+        if (!mek.hasNewMessage) return
+        mek = mek.messages.all()[0]
 		if (!mek.message) return
 		if (mek.key && mek.key.remoteJid == 'status@broadcast') return
+        global.prefix
 		global.blocked
 		const content = JSON.stringify(mek.message)
 		const from = mek.key.remoteJid
+        const type = Object.keys(mek.message)[0]
 		const { text, extendedText, contact, location, liveLocation, image, video, sticker, document, audio, product } = MessageType
 		const time = moment.tz('Asia/Jakarta').format('DD/MM HH:mm:ss')
-		const type = Object.keys(mek.message)[0]
 		body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
 		budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
 		const command = body.slice(0).trim().split(/ +/).shift().toLowerCase()		
@@ -97,6 +100,7 @@ hexa.on('message-new', async (mek) => {
 		const isGroupAdmins = groupAdmins.includes(sender) || false
         const conts = mek.key.fromMe ? hexa.user.jid : hexa.contacts[sender] || { notify: jid.replace(/@.+/, '') }
         const pushname = mek.key.fromMe ? hexa.user.name : conts.notify || conts.vname || conts.name || '-'
+
 
         //MESS
 		mess = {
