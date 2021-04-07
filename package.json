@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "dependencies": {
-    "@adiwajshing/baileys": "^3.4.1",
+    "@adiwajshing/baileys": "^3.5.0",
     "async": "^2.4.1",
     "awesome-phonenumber": "^2.48.0",
     "axios": "^0.21.1",
