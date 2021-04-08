@@ -22,7 +22,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "g-i-s": "^2.1.6",
     "got": "^11.8.2",
-    "insta-fetcher": "^1.2.3",
+    "instagram-url-direct": "^1.0.6",
     "jsdom": "^16.5.2",
     "moment-timezone": "^0.5.33",
     "performance-now": "^2.1.0",
