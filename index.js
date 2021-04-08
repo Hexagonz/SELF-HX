@@ -108,7 +108,7 @@ hexa.on('chat-update', async (mek) => {
 			wrongFormat: 'Format salah, coba liat lagi di menu',
 			error: {
 				stick: 'bukan sticker itu:v',
-				Iv: 'Linknya mokad:v'
+				Iv: 'Linknya error:v'
 			},
 			only: {
 				group: 'Khusus grup ngab',
@@ -297,6 +297,7 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}setfakeimg_
 ► _${prefix}setreply_
 ► _${prefix}ping_
+► _${prefix}join_
 ► _${prefix}term_ <code>
 ► _x_ <code>
 
@@ -865,7 +866,20 @@ Prefix : 「 ${prefix} 」
 			fakegroup(stdout)
 			}
 			})
-		    break
+		    break 
+    case prefix+ 'join':
+            try {
+            if (!isUrl(args[0]) && !args[0].includes('whatsapp.com')) return reply(mess.Iv)
+            hen = args[0]
+            if (!q) return fakestatus('Masukan link group')
+            var codeInvite = hen.split('https://chat.whatsapp.com/')[1]
+            if (!codeInvite) return fakegroup ('pastikan link sudah benar!')
+            var response = await hexa.acceptInvite(codeInvite)
+            fakestatus('SUKSES')
+            } catch {
+            fakegroup('LINK ERROR!')
+            }
+            break
     case prefix+ 'runtime':
     case prefix+ 'test':
             run = process.uptime() 
