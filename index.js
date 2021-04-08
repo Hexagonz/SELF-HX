@@ -31,7 +31,7 @@ const InstaClient = new Insta();
 const { EmojiAPI } = require("emoji-api");
 const emoji = new EmojiAPI()
 const Fb = require('fb-video-downloader');
-const ig = require('insta-fetcher')
+const instagramGetUrl = require("instagram-url-direct")
 const phoneNum = require('awesome-phonenumber')
 const gis = require('g-i-s');
 const got = require("got");
@@ -69,13 +69,12 @@ hexa.on('chat-update', async (mek) => {
         mek = mek.messages.all()[0]
 		if (!mek.message) return
 		if (mek.key && mek.key.remoteJid == 'status@broadcast') return
-        global.prefix
 		global.blocked
-		const content = JSON.stringify(mek.message)
+        const content = JSON.stringify(mek.message)
 		const from = mek.key.remoteJid
-        const type = Object.keys(mek.message)[0]
 		const { text, extendedText, contact, location, liveLocation, image, video, sticker, document, audio, product } = MessageType
 		const time = moment.tz('Asia/Jakarta').format('DD/MM HH:mm:ss')
+        const type = Object.keys(mek.message)[0]
 		body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
 		budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
 		const command = body.slice(0).trim().split(/ +/).shift().toLowerCase()		
@@ -831,18 +830,16 @@ Prefix : 「 ${prefix} 」
             case prefix+'ig':
             if (!q) return fakegroup('Linknya?')
             te = args.join(' ')
-            ig.fetchPost(`${te}`).then(res => {
-            cap = `*Username* : ${res.username}\n*Name* : ${res.name}\n*Like* : ${res.likes}\n*Caption* : ${res.caption}`
-            for (let Y of res.links)
-            tek = `${Y.url}`
-            sendMediaURL(from,tek,cap)
+            let links = await instagramGetUrl(`${te}`)
+            tek = `${links.url_list[0]}`
+            teks = `*DONE*\n\n*Link Dari* : ${args.join(' ')}`
+            sendMediaURL(from,tek,teks)
             console.log(tek)
-            })
             break
     case prefix+ 'igstalk':
             if (!q) return fakegroup('Usernamenya?')
             var username = args.join(' ')
-            Instahexa.getProfile(username)
+            InstaClient.getProfile(username)
             .then(Y => {
             var ten = `${Y.pic}`
             teks = `*ID* : ${Y.id}\n*Username* : ${args.join('')}\n*Bio* : ${Y.bio}\n*Followers* : ${Y.followers}\n*Following* : ${Y.following}\n*Private* : ${Y.private}\n*Verified* : ${Y.verified}\n\n*Link* : ${Y.link}`
@@ -868,7 +865,27 @@ Prefix : 「 ${prefix} 」
 			fakegroup(stdout)
 			}
 			})
-		    break    
+		    break 
+    case prefix+ 'cekporn' :
+            var imgbb = require('imgbb-uploader')
+            if ((isMedia && !mek.message.videoMessage || isQuotedImage ) && args.length == 0) {
+            encmedia = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
+            media = await hexa.downloadAndSaveMediaMessage(encmedia)
+            anu = await imgbb("335e494a31576ba78101089d60d21b35", media)
+            G = fetchJson(`https://nsfw-demo.sashido.io/api/image/classify?url=${anu.display_url}`)
+            .then( data => {
+            let porn = `*HASIL*\n`
+            for ( let G in data ) {
+            var ten = (Math.floor((data[G].probability) * 100))
+            porn += `-${data[G].className} : ${ten}%\n`
+            }
+            hexa.sendMessage(from,porn,text,{quoted:mek})          
+            })
+            } else {
+            reply('gambarnya?')
+            fs.unlinkSync(media)
+            }
+            break
     case prefix+ 'runtime':
     case prefix+ 'test':
             run = process.uptime() 
