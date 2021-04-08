@@ -31,6 +31,7 @@ const InstaClient = new Insta();
 const { EmojiAPI } = require("emoji-api");
 const emoji = new EmojiAPI()
 const Fb = require('fb-video-downloader');
+const instagramGetUrl = require("instagram-url-direct")
 const phoneNum = require('awesome-phonenumber')
 const gis = require('g-i-s');
 const got = require("got");
@@ -826,6 +827,15 @@ Prefix : 「 ${prefix} 」
 			hexa.sendMessage(from, teks, text,{quoted:mek,detectLinks: false})                        
             })              
 			break
+            case prefix+'ig':
+            if (!q) return fakegroup('Linknya?')
+            te = args.join(' ')
+            let links = await instagramGetUrl(`${te}`)
+            tek = `${links.url_list[0]}`
+            teks = `*DONE*\n\n*Link Dari* : ${args.join(' ')}`
+            sendMediaURL(from,tek,teks)
+            console.log(tek)
+            break
     case prefix+ 'igstalk':
             if (!q) return fakegroup('Usernamenya?')
             var username = args.join(' ')
@@ -855,7 +865,7 @@ Prefix : 「 ${prefix} 」
 			fakegroup(stdout)
 			}
 			})
-		    break 
+		    break
     case prefix+ 'runtime':
     case prefix+ 'test':
             run = process.uptime() 
