@@ -866,26 +866,6 @@ Prefix : 「 ${prefix} 」
 			}
 			})
 		    break 
-    case prefix+ 'cekporn' :
-            var imgbb = require('imgbb-uploader')
-            if ((isMedia && !mek.message.videoMessage || isQuotedImage ) && args.length == 0) {
-            encmedia = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
-            media = await hexa.downloadAndSaveMediaMessage(encmedia)
-            anu = await imgbb("335e494a31576ba78101089d60d21b35", media)
-            G = fetchJson(`https://nsfw-demo.sashido.io/api/image/classify?url=${anu.display_url}`)
-            .then( data => {
-            let porn = `*HASIL*\n`
-            for ( let G in data ) {
-            var ten = (Math.floor((data[G].probability) * 100))
-            porn += `-${data[G].className} : ${ten}%\n`
-            }
-            hexa.sendMessage(from,porn,text,{quoted:mek})          
-            })
-            } else {
-            reply('gambarnya?')
-            fs.unlinkSync(media)
-            }
-            break
     case prefix+ 'runtime':
     case prefix+ 'test':
             run = process.uptime() 
