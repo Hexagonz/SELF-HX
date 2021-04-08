@@ -86,6 +86,7 @@
 | SET FAKE IMG |✅|
 | SET REPLY |✅|
 | PING |✅|
+| JOIN |✅|
 | TERM |✅|
 | X |✅|
 
