@@ -32,6 +32,7 @@ const { EmojiAPI } = require("emoji-api");
 const emoji = new EmojiAPI()
 const Fb = require('fb-video-downloader');
 const instagramGetUrl = require("instagram-url-direct")
+const twitterGetUrl = require("twitter-url-direct")
 const phoneNum = require('awesome-phonenumber')
 const gis = require('g-i-s');
 const got = require("got");
@@ -70,12 +71,13 @@ hexa.on('chat-update', async (mek) => {
 		if (!mek.message) return
 		if (mek.key && mek.key.remoteJid == 'status@broadcast') return
 		global.blocked
+         mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
         const content = JSON.stringify(mek.message)
 		const from = mek.key.remoteJid
 		const { text, extendedText, contact, location, liveLocation, image, video, sticker, document, audio, product } = MessageType
 		const time = moment.tz('Asia/Jakarta').format('DD/MM HH:mm:ss')
         const type = Object.keys(mek.message)[0]
-		body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
+        body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
 		budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
 		const command = body.slice(0).trim().split(/ +/).shift().toLowerCase()		
 		const args = body.trim().split(/ +/).slice(1)
@@ -286,6 +288,7 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}ytmp3_ <link>
 ► _${prefix}ytmp4_ <link>
 ► _${prefix}ig_ <link>
+► _${prefix}twitter_ <link>
 ► _${prefix}fb_ <link>
 ► _${prefix}brainly_ <query>
 ► _${prefix}image_ <query>
@@ -804,7 +807,7 @@ Prefix : 「 ${prefix} 」
 				reply(mess.error.api)
 				}
 				break
-    case prefix+ 'image'	:
+    case prefix+ 'image':
             if (args.length < 1) return reply('Masukan teks!')
             const gimg = args[0];
             gis(gimg, async (error, result) => {
@@ -828,7 +831,8 @@ Prefix : 「 ${prefix} 」
 			hexa.sendMessage(from, teks, text,{quoted:mek,detectLinks: false})                        
             })              
 			break
-            case prefix+'ig':
+    case prefix+'ig':
+            if (!isUrl(args[0]) && !args[0].includes('instagram.com')) return reply(mess.Iv)
             if (!q) return fakegroup('Linknya?')
             te = args.join(' ')
             let links = await instagramGetUrl(`${te}`)
@@ -846,9 +850,10 @@ Prefix : 「 ${prefix} 」
             teks = `*ID* : ${Y.id}\n*Username* : ${args.join('')}\n*Bio* : ${Y.bio}\n*Followers* : ${Y.followers}\n*Following* : ${Y.following}\n*Private* : ${Y.private}\n*Verified* : ${Y.verified}\n\n*Link* : ${Y.link}`
             sendMediaURL(from,ten,teks)
             }) 
-            break  
+            break    
     case prefix+ 'fb':
             if (!q) return reply('Linknya?')
+            if (!isUrl(args[0]) && !args[0].includes('facebook.com')) return reply(mess.Iv)
             te = args.join(' ')
             fakestatus(mess.wait)
             Fb.getInfo(`${te}`)
@@ -880,6 +885,16 @@ Prefix : 「 ${prefix} 」
             fakegroup('LINK ERROR!')
             }
             break
+    case prefix+'twitter':
+            if (!isUrl(args[0]) && !args[0].includes('twitter.com')) return reply(mess.Iv)
+            if (!q) return fakegroup('Linknya?')
+            ten = args[0]
+            var res = await twitterGetUrl(`${ten}`)
+            .then(g => {
+            ren = `${g.download[2].url}`
+            sendMediaURL(from,ren,'DONE')
+            })
+            break
     case prefix+ 'runtime':
     case prefix+ 'test':
             run = process.uptime() 
@@ -896,7 +911,7 @@ Prefix : 「 ${prefix} 」
 			const pingnya = `*${teks}Speed: ${latensi.toFixed(4)} Second*`
 			fakegroup(pingnya)
 			})
-			break            
+			break    
 default:
 if (budy.startsWith('x')){
 return hexa.sendMessage(from, JSON.stringify(eval(budy.slice(2)),null,'\t'),text, {quoted: mek})
