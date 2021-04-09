@@ -28,7 +28,8 @@
     "performance-now": "^2.1.0",
     "request": "^2.88.2",
     "scraper-instagram": "^1.0.17",
-    "spinnies": "^0.5.1",
+    "spinnies": "^0.5.1",   
+    "twitter-url-direct": "^1.0.1",    
     "yt-search": "^2.7.6"
   },
   "scripts": {
