@@ -118,7 +118,7 @@ prefix = 'z'
 fake = 'HEXAGONZ'
 numbernye = '0'
 banChats = true
-targetpc = '6285751056816'
+
 //===================================================//
 const hexa = new WAConnection()
 hexa.on('qr', qr => {
@@ -355,12 +355,10 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}ytsearch_ <query>
 ► _${prefix}igstalk_ <query>
 ► _${prefix}play_ <query>
-► _${prefix}video_ <query>
 ► _${prefix}ytmp3_ <link>
 ► _${prefix}ytmp4_ <link>
 ► _${prefix}ig_ <link>
 ► _${prefix}twitter_ <link>
-► _${prefix}tiktok_ <link>
 ► _${prefix}fb_ <link>
 ► _${prefix}brainly_ <query>
 ► _${prefix}image_ <query>
@@ -397,28 +395,6 @@ Prefix : 「 ${prefix} 」
             + 'END:VCARD'.trim()
             hexa.sendMessage(from, {displayName: `${nah}`, vcard: vcard}, contact, {contextInfo: {"mentionedJid": members_ids}})
             break
-    case prefix+ 'sticktag':
-            if ((isMedia && !mek.message.videoMessage || isQuotedSticker) && args.length == 0) {
-            encmedia = isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
-            file = await hexa.downloadAndSaveMediaMessage(encmedia, filename = getRandom())
-            value = args.join(" ")
-            var group = await hexa.groupMetadata(from)
-            var member = group['participants']
-            var mem = []
-            member.map(async adm => {
-            mem.push(adm.id.replace('c.us', 's.whatsapp.net'))
-            })
-            var options = {
-                contextInfo: { mentionedJid: mem },
-                quoted: mek
-            }
-            ini_buffer = fs.readFileSync(file)
-            hexa.sendMessage(from, ini_buffer, sticker, options)
-            fs.unlinkSync(file)
-            } else {
-            reply(`*Reply sticker yang sudah dikirim*`)
-            }
-            break
     case prefix+ 'fitnah':
             if (args.length < 1) return reply(`Usage :\n${prefix}fitnah [@tag|pesan|balasanbot]]\n\nEx : \n${prefix}fitnah @tagmember|hai|hai juga`)
             var gh = args.join('')
@@ -427,20 +403,6 @@ Prefix : 「 ${prefix} 」
             var target = gh.split("|")[1];
             var bot = gh.split("|")[2];
             hexa.sendMessage(from, `${bot}`, text, {quoted: { key: { fromMe: false, participant: `${mentioned}`, ...(from ? { remoteJid: from } : {}) }, message: { conversation: `${target}` }}})
-            break
-    case prefix+ 'settarget':
-            if(!q) return reply(`${prefix}settarget 628xxxxx`)
-            targetpc = args[0]
-            fakegroup(`Succes Mengganti target fitnahpc : ${targetpc}`)
-            break
-    case prefix+ 'fitnahpc':
-            if(!q) return reply(`${prefix}fitnahpc teks target|teks lu`)
-            jids = `${targetpc}@s.whatsapp.net` // nomer target
-            var split = args.join(' ').replace(/@|\d/gi, '').split('|')
-            var taged = mek.message.extendedTextMessage.contextInfo.mentionedJid[0]
-            var options = {contextInfo: {quotedMessage: {extendedTextMessage: {text: split[0]}}}}
-            const responye = await hexa.sendMessage(jids, `${split[1]}`, MessageType.text, options)
-            await hexa.deleteMessage(jids, { id: responye.messageID, remoteJid: jids, fromMe: true })
             break
     case prefix+ 'tomp3':
             if (!isQuotedVideo) return fakegroup('Reply videonya!')
@@ -645,29 +607,7 @@ Prefix : 「 ${prefix} 」
                         } catch (err) {
                         reply(mess.error.api)
                         }
-                   break  
-        case prefix+ 'video':
-            if (args.length === 0) return reply(`Kirim perintah *${prefix}video* _Judul lagu yang akan dicari_`)
-            var srch = args.join('')
-            aramas = await yts(srch);
-            aramat = aramas.all 
-            var mulaikah = aramat[0].url                            
-                  try {
-                    ytv(mulaikah)
-                    .then((res) => {
-                        const { dl_link, thumb, title, filesizeF, filesize } = res
-                        axios.get(`https://tinyurl.com/api-create.php?url=${dl_link}`)
-                        .then(async (a) => {
-                        if (Number(filesize) >= 100000) return sendMediaURL(from, thumb, `*PLAY VIDEO*\n\n*Title* : ${title}\n*Ext* : MP3\n*Filesize* : ${filesizeF}\n*Link* : ${a.data}\n\n_Untuk durasi lebih dari batas disajikan dalam mektuk link_`)
-                        const captions = `*PLAY VIDEO*\n\n*Title* : ${title}\n*Ext* : MP4\n*Size* : ${filesizeF}\n*Link* : ${a.data}\n\n_Silahkan tunggu file media sedang dikirim mungkin butuh beberapa menit_`
-                        sendMediaURL(from, thumb, captions)
-                        await sendMediaURL(from, dl_link).catch(() => reply('error'))
-                        })                
-                        })
-                        } catch (err) {
-                        reply(mess.error.api)
-                        }
-                   break      
+                   break        
     case prefix+ 'sticker': 
     case prefix+ 'stiker':
     case prefix+ 'sg':
@@ -881,19 +821,6 @@ Prefix : 「 ${prefix} 」
             }
             });
             break
-    case prefix+ 'tiktok':
-            if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
-            if (!q) return fakegroup('Linknya?')
-            reply(mess.wait)
-            zrapi.keeptiktok(`${args[0]}`)
-            .then(data => {
-            da = `${data}`
-            axios.get(`https://tinyurl.com/api-create.php?url=${da}`)
-            .then(async (a) => {
-            sendMediaURL(from,da,`*DONE*\n\n*Link* : ${a.data}`) 
-            })
-            })
-            break
     case prefix+ 'brainly':
 			if (args.length < 1) return reply('Pertanyaan apa')
           	brien = args.join(' ')
@@ -904,29 +831,7 @@ Prefix : 「 ${prefix} 」
 			}
 			hexa.sendMessage(from, teks, text,{quoted:mek,detectLinks: false})                        
             })              
-			break
-    case prefix+'ig':
-            if (!isUrl(args[0]) && !args[0].includes('instagram.com')) return reply(mess.Iv)
-            if (!q) return fakegroup('Linknya?')
-            reply(mess.wait)
-            zrapi.instagram(`${args[0]}`)
-            .then(a => {
-            da = `${a.link}`
-            axios.get(`https://tinyurl.com/api-create.php?url=${da}`)
-            .then(async (s) => {
-            sendMediaURL(from,da,`*DONE*\n\n*Link* : ${s.data}`) 
-            })
-            })
-            break
-    case prefix+ 'igstalk':
-            if (!q) return fakegroup('Usernamenya?')
-            ig.fetchUser(`${args.join(' ')}`).then(Y => {
-            console.log(`${args.join(' ')}`)
-            ten = `${Y.profile_pic_url_hd}`
-            teks = `*ID* : ${Y.profile_id}\n*Username* : ${args.join('')}\n*Full Name* : ${Y.full_name}\n*Bio* : ${Y.biography}\n*Followers* : ${Y.followers}\n*Following* : ${Y.following}\n*Private* : ${Y.is_private}\n*Verified* : ${Y.is_verified}\n\n*Link* : https://instagram.com/${args.join('')}`
-            sendMediaURL(from,ten,teks) 
-            })      
-            break    
+			break  
     case prefix+ 'fb':
             if (!q) return reply('Linknya?')
             if (!isUrl(args[0]) && !args[0].includes('facebook.com')) return reply(mess.Iv)
