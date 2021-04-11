@@ -57,6 +57,7 @@
 | FUN |✅|
 | ------------- | ------------- |
 | FITNAH |✅|
+| FITNAH PC |✅|
 | KONTAK |✅|
 
 
@@ -71,10 +72,13 @@
 | YTSEARCH |✅|
 | IGSTALK |✅|
 | PLAY |✅|
+| VIDEO |✅|
 | YTMP3 |✅|
 | YTMP4 |✅|
 | IGDL |✅|
 | FBDL |✅|
+| TIKTOKDL |✅|
+| TWITTER |✅|
 | BRAINLY |✅|
 | IMAGE |✅|
 
@@ -84,6 +88,7 @@
 | PUBLIC |✅|
 | SET THUMB |✅|
 | SET FAKE IMG |✅|
+| SET TARGET |✅|
 | SET REPLY |✅|
 | PING |✅|
 | JOIN |✅|
