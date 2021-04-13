@@ -52,18 +52,24 @@ numbernye = '0'
 banChats = true
 targetpc = '6285751056816'
 //===================================================//
-const hexa = new WAConnection()
-hexa.on('qr', qr => {
-	qrcode.generate(qr, { small: true })
-	console.log(`[ ${time} ] SCAN QR`)
-})
-hexa.on('open', () => {
-	const authInfo = hexa.base64EncodedAuthInfo()
-	console.log(`Succes`)
-	fs.writeFileSync('./session.json', JSON.stringify(authInfo, null, '\t'))
-})
-fs.existsSync('./session.json') && hexa.loadAuthInfo('./session.json')
-hexa.connect();
+async function starts() {
+    const hexa = new WAConnection()
+    hexa.logger.level = 'warn'
+    console.log(banner.string)
+    hexa.on('qr', () => {
+        console.log(color('[','white'), color('!','red'), color(']','white'), color(' Scan bang'))
+    })
+
+    fs.existsSync('./session.json') && hexa.loadAuthInfo('./session.json')
+    hexa.on('connecting', () => {
+        start('2', 'Connecting...')
+    })
+    hexa.on('open', () => {
+        success('2', 'Connected')
+    })
+    await hexa.connect({timeoutMs: 30*1000})
+        fs.writeFileSync('./session.json', JSON.stringify(hexa.base64EncodedAuthInfo(), null, '\t'))
+
 //=================================================//
 hexa.on('chat-update', async (mek) => {
 	try {
@@ -72,13 +78,13 @@ hexa.on('chat-update', async (mek) => {
 		if (!mek.message) return
 		if (mek.key && mek.key.remoteJid == 'status@broadcast') return
 		global.blocked
-        mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
-        const content = JSON.stringify(mek.message)
+        	mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
+        	const content = JSON.stringify(mek.message)
 		const from = mek.key.remoteJid
 		const { text, extendedText, contact, location, liveLocation, image, video, sticker, document, audio, product } = MessageType
 		const time = moment.tz('Asia/Jakarta').format('DD/MM HH:mm:ss')
-        const type = Object.keys(mek.message)[0]
-        body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
+        	const type = Object.keys(mek.message)[0]
+        	body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
 		budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
 		const command = body.slice(0).trim().split(/ +/).shift().toLowerCase()		
 		const args = body.trim().split(/ +/).slice(1)
@@ -975,4 +981,7 @@ if (isGroup && budy != undefined) {
 	// console.log(e)
 	}
 })
+	}
+starts()
+	
     
