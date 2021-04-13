@@ -36,6 +36,7 @@ const twitterGetUrl = require("twitter-url-direct")
 const phoneNum = require('awesome-phonenumber')
 const gis = require('g-i-s');
 const got = require("got");
+const imageToBase64 = require('image-to-base64');
 const ID3Writer = require('browser-id3-writer');		
 const brainly = require('brainly-scraper')
 const yts = require( 'yt-search')
@@ -309,7 +310,6 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}setfakeimg_
 ► _${prefix}setreply_
 ► _${prefix}ping_
-► _${prefix}get_
 ► _${prefix}join_
 ► _${prefix}term_ <code>
 ► _x_ <code>
@@ -392,6 +392,66 @@ Prefix : 「 ${prefix} 」
             hexa.sendMessage(from, buffer453, audio, { mimetype: 'audio/mp4', quoted: mek })
             fs.unlinkSync(ran)
             })
+            break
+    case prefix+ 'fast':
+            if (!isQuotedVideo) return fakegroup('Reply videonya!')
+            fakegroup(mess.wait)
+            encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+            media = await hexa.downloadAndSaveMediaMessage(encmedia)
+            ran = getRandom('.mp4')
+            exec(`ffmpeg -i ${media} -filter_complex "[0:v]setpts=0.5*PTS[v];[0:a]atempo=2[a]" -map "[v]" -map "[a]" ${ran}`, (err) => {
+            fs.unlinkSync(media)
+            if (err) return fakegroup(`Err: ${err}`)
+            buffer453 = fs.readFileSync(ran)
+            hexa.sendMessage(from, buffer453, video, { mimetype: 'video/mp4', quoted: mek })
+            fs.unlinkSync(ran)
+            })
+            break
+    case prefix+ 'slow':
+            if (!isQuotedVideo) return fakegroup('Reply videonya!')
+            fakegroup(mess.wait)
+            encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+            media = await hexa.downloadAndSaveMediaMessage(encmedia)
+            ran = getRandom('.mp4')
+            exec(`ffmpeg -i ${media} -filter_complex "[0:v]setpts=2*PTS[v];[0:a]atempo=0.5[a]" -map "[v]" -map "[a]" ${ran}`, (err) => {
+            fs.unlinkSync(media)
+            if (err) return fakegroup(`Err: ${err}`)
+            buffer453 = fs.readFileSync(ran)
+            hexa.sendMessage(from, buffer453, video, { mimetype: 'video/mp4', quoted: mek })
+            fs.unlinkSync(ran)
+            })
+            break
+    case prefix+ 'reverse':
+            if (!isQuotedVideo) return fakegroup('Reply videonya!')
+            encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
+            media = await hexa.downloadAndSaveMediaMessage(encmedia)
+            ran = getRandom('.mp4')
+            exec(`ffmpeg -i ${media} -vf reverse -af areverse ${ran}`, (err) => {
+            fs.unlinkSync(media)
+            if (err) return fakegroup(`Err: ${err}`)
+            buffer453 = fs.readFileSync(ran)
+            hexa.sendMessage(from, buffer453, video, { mimetype: 'video/mp4', quoted: mek })
+            fs.unlinkSync(ran)
+            })
+            break
+    case prefix+ 'anime':
+            reply(mess.wait)
+            fetch('https://raw.githubusercontent.com/pajaar/grabbed-results/master/pajaar-2020-gambar-anime.txt')
+            .then(res => res.text())
+            .then(body => {
+            let tod = body.split("\n");
+            let pjr = tod[Math.floor(Math.random() * tod.length)];
+            imageToBase64(pjr)
+            .then((response) => {
+            media =  Buffer.from(response, 'base64');
+            hexa.sendMessage(from,media,image,{quoted:mek,caption:'NIH'})
+            }
+            )
+            .catch((error) => {
+            console.log(error); 
+            }
+            )
+            });
             break
     case prefix+ 'kontak':
             pe = args.join(' ') 
@@ -926,7 +986,7 @@ Prefix : 「 ${prefix} 」
 			fakegroup(pingnya)
 			})
 			break   
-            
+
 default:
 if (budy.startsWith('x')){
 return hexa.sendMessage(from, JSON.stringify(eval(budy.slice(2)),null,'\t'),text, {quoted: mek})
