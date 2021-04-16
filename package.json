@@ -22,7 +22,8 @@
     "fluent-ffmpeg": "^2.1.2",
     "g-i-s": "^2.1.6",
     "got": "^11.8.2",    
-    "image-to-base64": "^2.2.0",    
+    "image-to-base64": "^2.2.0", 
+    "insta-fetcher": "^1.2.3",
     "jsdom": "^16.5.2",
     "moment-timezone": "^0.5.33",
     "performance-now": "^2.1.0",    
@@ -31,9 +32,9 @@
     "request": "^2.88.2",
     "scraper-instagram": "^1.0.17",
     "spinnies": "^0.5.1",   
-    "twitter-url-direct": "^1.0.1",    
-    "yt-search": "^2.7.6",
-    "zrapi": "0.0.4"  
+    "tiktok-scraper-without-watermark": "^1.0.6",
+    "twitter-url-direct": "^1.0.1",  
+    "yt-search": "^2.7.6"
   },
   "scripts": {
     "start": "node index",
