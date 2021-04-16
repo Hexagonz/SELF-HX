@@ -25,9 +25,9 @@ const { spawn, exec, execSync } = require("child_process")
 const fs = require("fs")
 const axios = require("axios")
 const ffmpeg = require('fluent-ffmpeg')
-const ig = require('insta-fetcher')
 const { EmojiAPI } = require("emoji-api");
-const zrapi = require('zrapi')
+const tik = require('tiktok-scraper-without-watermark')
+const ig = require('insta-fetcher')
 const emoji = new EmojiAPI()
 const fetch = require('node-fetch');
 const Fb = require('fb-video-downloader');
@@ -43,7 +43,7 @@ const { error } = require("qrcode-terminal")
 const { getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, banner, start, info, success, close } = require('./lib/functions')
 const { color, bgcolor } = require('./lib/color')
 const { fetchJson, getBase64, kyun, createExif } = require('./lib/fetcher')
-const { yta, ytv } = require('./lib/ytdl')
+const { yta, ytv, igdl } = require('./lib/ytdl')
 const time = moment().tz('Asia/Jakarta').format("HH:mm:ss")
 
 prefix = 'z'
@@ -302,6 +302,7 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}ig_ <link>
 ► _${prefix}twitter_ <link>
 ► _${prefix}tiktok_ <link>
+► _${prefix}tiktokaudio_ <link>
 ► _${prefix}fb_ <link>
 ► _${prefix}brainly_ <query>
 ► _${prefix}image_ <query>
@@ -845,31 +846,40 @@ Prefix : 「 ${prefix} 」
 				break
     case prefix+ 'image':
             if (args.length < 1) return reply('Masukan teks!')
-            const gimg = args[0];
+            const gimg = args.join('');
             reply(mess.wait)
             gis(gimg, async (error, result) => {
-            for (var i = 0; i < (result.length < 3 ? result.length : 3); i++) {
-            var get = got(result[i].url);
-            var stream = get.buffer();
-            stream.then(async (images) => {
-            await fakethumb(images);
-            });
-            }
+            n = result
+            images = n[Math.floor(Math.random() * n.length)].url
+            hexa.sendMessage(from,{url:images},image,{quoted:mek})
             });
             break
-    case prefix+ 'tiktok':
-            if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
-            if (!q) return fakegroup('Linknya?')
-            reply(mess.wait)
-            zrapi.keeptiktok(`${args[0]}`)
-            .then(data => {
-            da = `${data}`
-            axios.get(`https://tinyurl.com/api-create.php?url=${da}`)
-            .then(async (a) => {
-            sendMediaURL(from,da,`*DONE*\n\n*Link* : ${a.data}`) 
-            })
-            })
-            break
+ 	case prefix+ 'tiktok':
+ 		if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
+ 		if (!q) return fakegroup('Linknya?')
+ 		reply(mess.wait)
+ 		tik.ssstik(`${args[0]}`)
+    		.then(result => {
+    		const { videonowm, videonowm2, text } = result
+    		axios.get(`https://tinyurl.com/api-create.php?url=${videonowm2}`)
+    		.then(async (a) => {
+    		me = `*Title* : ${text}\n*Link* : ${a.data}`
+		hexa.sendMessage(from,{url:`${videonowm}`},video,{mimetype:'video/mp4',quoted:mek,caption:me})
+		})
+		})
+     		.catch(e => console.log(e))
+     		break
+    case prefix+ 'tiktokaudio':
+ 		if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
+ 		if (!q) return fakegroup('Linknya?')
+ 		reply(mess.wait)
+ 		tik.ssstik(`${args[0]}`)
+    		.then(result => {
+    		const { music,text } = result
+		hexa.sendMessage(from,{url:`${music}`},audio,{mimetype:'audio/mp4',filename : `${text}`,quoted:mek})
+		})
+     		.catch(e => console.log(e))
+     		break
     case prefix+ 'brainly':
 			if (args.length < 1) return reply('Pertanyaan apa')
           	brien = args.join(' ')
@@ -881,19 +891,16 @@ Prefix : 「 ${prefix} 」
 			hexa.sendMessage(from, teks, text,{quoted:mek,detectLinks: false})                        
             })              
 			break
-    case prefix+'ig':
-            if (!isUrl(args[0]) && !args[0].includes('instagram.com')) return reply(mess.Iv)
-            if (!q) return fakegroup('Linknya?')
-            reply(mess.wait)
-            zrapi.instagram(`${args[0]}`)
-            .then(a => {
-            da = `${a.link}`
-            axios.get(`https://tinyurl.com/api-create.php?url=${da}`)
-            .then(async (s) => {
-            sendMediaURL(from,da,`*DONE*\n\n*Link* : ${s.data}`) 
-            })
-            })
-            break
+    case prefix+ 'ig':
+        if (!isUrl(args[0]) && !args[0].includes('instagram.com')) return reply(mess.Iv)
+        if (!q) return fakegroup('Linknya?')
+        reply(mess.wait)
+	igdl(args[0])
+	.then((result) => {
+    	for (Y of result.url_list )
+    	sendMediaURL(from,Y,'Nih')
+	})
+	break
     case prefix+ 'igstalk':
             if (!q) return fakegroup('Usernamenya?')
             ig.fetchUser(`${args.join(' ')}`).then(Y => {
