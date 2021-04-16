@@ -81,6 +81,7 @@
 | IGDL |✅|
 | FBDL |✅|
 | TIKTOKDL |✅|
+| TIKTOK AUDIO |✅|
 | TWITTER |✅|
 | BRAINLY |✅|
 | IMAGE |✅|
