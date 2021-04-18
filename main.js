@@ -7,6 +7,7 @@ const {
 } = require('@adiwajshing/baileys')
 const fs = require('fs')
 const { banner, start, success } = require('./lib/functions')
+const { color } = require('./lib/color')
 
 require('./index.js')
 nocache('./index.js', module => console.log(`${module} is now updated!`))
