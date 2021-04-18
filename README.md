@@ -47,6 +47,7 @@
 | ------------- | ------------- |
 | TOIMG |✅|
 | TOMP3 |✅|
+| TOMP4 |✅|
 | SLOW |✅|
 | FAST |✅|
 | REVERSE |✅|
@@ -69,6 +70,7 @@
 | STICKTAG |✅|
 | HIDETAG |✅|
 | KONTAG |✅|
+| TOTAG |✅|
 
 | DOWNLOAD |✅|
 | ------------- | ------------- |
