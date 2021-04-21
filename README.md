@@ -45,6 +45,7 @@
 | STICKER WM |✅|
 | TAKE STICKER |✅|
 | FDEFACE |✅|
+| CIRCLE |✅|
 
 | CONVERT |✅|
 | ------------- | ------------- |
@@ -54,6 +55,7 @@
 | SLOW |✅|
 | FAST |✅|
 | REVERSE |✅|
+| TOURL |✅|
 
 | UP STORY |✅|
 | ------------- | ------------- |
