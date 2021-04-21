@@ -33,6 +33,7 @@
     "request": "^2.88.2",
     "scraper-instagram": "^1.0.17",
     "spinnies": "^0.5.1",
+    "swiftcord": "^2.1.7",   
     "tiktok-scraper-without-watermark": "^1.0.6",
     "twitter-url-direct": "^1.0.1",
     "yt-search": "^2.7.6"
