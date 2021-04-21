@@ -39,11 +39,13 @@ const imageToBase64 = require('image-to-base64');
 const ID3Writer = require('browser-id3-writer');		
 const brainly = require('brainly-scraper')
 const yts = require( 'yt-search')
+const { Swiftcord } = require("swiftcord");
+const cord = new Swiftcord();
 const { error } = require("qrcode-terminal")
 const { getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, banner, start, info, success, close } = require('./lib/functions')
 const { color, bgcolor } = require('./lib/color')
 const { fetchJson, getBase64, kyun, createExif } = require('./lib/fetcher')
-const { yta, ytv, igdl } = require('./lib/ytdl')
+const { yta, ytv, igdl, upload } = require('./lib/ytdl')
 const { webp2mp4File} = require('./lib/webp2mp4')
 const time = moment().tz('Asia/Jakarta').format("HH:mm:ss")
 
@@ -251,6 +253,7 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}take_ <author|packname>
 ► _${prefix}fdeface_
 ► _${prefix}emoji_
+► _${prefix}circle_
 
 *</CONVERT>*
 ► _${prefix}toimg_
@@ -259,6 +262,7 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}slow_
 ► _${prefix}fast_
 ► _${prefix}reverse_
+► _${prefix}tourl_
 
 *</UP STORY>*
 ► _${prefix}upswteks_
@@ -918,7 +922,7 @@ Prefix : 「 ${prefix} 」
  		if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
  		if (!q) return fakegroup('Linknya?')
  		reply(mess.wait)
- 		tiktod(`${args[0]}`)
+		tik.ssstik(`${args[0]}`)
     		.then(result => {
     		console.log(result)
     		const { videonowm, videonowm2, text } = result
@@ -1121,6 +1125,27 @@ Prefix : 「 ${prefix} 」
             }
             fs.unlinkSync(owgi)
             break
+	    case prefix+ 'circle':
+            if ((isMedia && !mek.message.videoMessage || isQuotedImage ) && args.length == 0) {
+            boij = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
+            owgi = await hexa.downloadMediaMessage(boij)
+            im = await cord.circle(owgi)
+            res = await upload(im)
+            sendStickerFromUrl(from,res) 
+            }else {
+            reply('reply gambar')
+            }
+            break
+    case prefix+ 'tourl':
+            if ((isMedia && !mek.message.videoMessage || isQuotedImage || isQuotedVideo ) && args.length == 0) {
+            boij = isQuotedImage || isQuotedVideo ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
+            owgi = await hexa.downloadMediaMessage(boij)
+            res = await upload(owgi)
+            reply(res)
+            } else {
+            reply('kirim/reply gambar/video')
+            }
+            break	
 default:
 if (budy.startsWith('x')){
 return hexa.sendMessage(from, JSON.stringify(eval(budy.slice(2)),null,'\t'),text, {quoted: mek})
