@@ -45,7 +45,6 @@
 | STICKER WM |✅|
 | TAKE STICKER |✅|
 | FDEFACE |✅|
-| CIRCLE |✅|
 
 | CONVERT |✅|
 | ------------- | ------------- |
