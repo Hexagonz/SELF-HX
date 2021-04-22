@@ -39,8 +39,6 @@ const imageToBase64 = require('image-to-base64');
 const ID3Writer = require('browser-id3-writer');		
 const brainly = require('brainly-scraper')
 const yts = require( 'yt-search')
-const { Swiftcord } = require("swiftcord");
-const cord = new Swiftcord();
 const { error } = require("qrcode-terminal")
 const { getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, banner, start, info, success, close } = require('./lib/functions')
 const { color, bgcolor } = require('./lib/color')
@@ -1124,17 +1122,6 @@ Prefix : 「 ${prefix} 」
             reply('reply stiker')
             }
             fs.unlinkSync(owgi)
-            break
-	    case prefix+ 'circle':
-            if ((isMedia && !mek.message.videoMessage || isQuotedImage ) && args.length == 0) {
-            boij = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
-            owgi = await hexa.downloadMediaMessage(boij)
-            im = await cord.circle(owgi)
-            res = await upload(im)
-            sendStickerFromUrl(from,res) 
-            }else {
-            reply('reply gambar')
-            }
             break
     case prefix+ 'tourl':
             if ((isMedia && !mek.message.videoMessage || isQuotedImage || isQuotedVideo ) && args.length == 0) {
