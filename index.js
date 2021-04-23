@@ -39,6 +39,8 @@ const imageToBase64 = require('image-to-base64');
 const ID3Writer = require('browser-id3-writer');		
 const brainly = require('brainly-scraper')
 const yts = require( 'yt-search')
+const ms = require('parse-ms')
+const toMs = require('ms')
 const { error } = require("qrcode-terminal")
 const { getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, banner, start, info, success, close } = require('./lib/functions')
 const { color, bgcolor } = require('./lib/color')
@@ -46,12 +48,18 @@ const { fetchJson, getBase64, kyun, createExif } = require('./lib/fetcher')
 const { yta, ytv, igdl, upload } = require('./lib/ytdl')
 const { webp2mp4File} = require('./lib/webp2mp4')
 const time = moment().tz('Asia/Jakarta').format("HH:mm:ss")
+const afk = JSON.parse(fs.readFileSync('./lib/off.json'))
+const { sleep, isAfk, cekafk, addafk } = require('./lib/offline')
 
 prefix = 'z'
+banChats = true
+offline = false
+targetpc = '6285751056816'
+owner = '6285751056816'
 fake = 'HEXAGONZ'
 numbernye = '0'
-banChats = true
-targetpc = '6285751056816'
+waktu = '-'
+alasan = '-'
 //=================================================//
 module.exports = hexa = async (hexa, mek) => {
 	try {
@@ -226,6 +234,34 @@ module.exports = hexa = async (hexa, mek) => {
                     fs.unlinkSync(filename)
                 });
             }   
+//FUNCTION
+            cekafk(afk)
+            if (!mek.key.remoteJid.endsWith('@g.us') && offline){
+            if (!mek.key.fromMe){
+            if (isAfk(mek.key.remoteJid)) return
+            addafk(mek.key.remoteJid)
+            heheh = ms(Date.now() - waktu) 
+            hexa.sendMessage(mek.key.remoteJid,`@6285751056816 Sedang Offline!\n\n*Alasan :* ${alasan}\n*Sejak :* ${heheh.hours} Jam, ${heheh.minutes} Menit, ${heheh.seconds} Detik lalu\n\nSilahkan Hubungi Lagi Nanti`, MessageType.text,{contextInfo:{ mentionedJid: ['6285751056816@s.whatsapp.net'],'stanzaId': "B826873620DD5947E683E3ABE663F263", 'participant': "0@s.whatsapp.net", 'remoteJid': 'status@broadcast', 'quotedMessage': {"imageMessage": {"caption": "*OFFLINE*", 'jpegThumbnail': fs.readFileSync('./stik/thumb.jpeg')}}}})
+            }
+            }   
+        if (mek.key.remoteJid.endsWith('@g.us') && offline) {
+        if (!mek.key.fromMe){
+        if (mek.message.extendedTextMessage != undefined){
+        if (mek.message.extendedTextMessage.contextInfo != undefined){
+        if (mek.message.extendedTextMessage.contextInfo.mentionedJid != undefined){
+        for (let ment of mek.message.extendedTextMessage.contextInfo.mentionedJid) {
+        if (ment === `${owner}@s.whatsapp.net`){
+        if (isAfk(mek.key.remoteJid)) return
+        addafk(mek.key.remoteJid)
+        heheh = ms(Date.now() - waktu)
+        hexa.sendMessage(mek.key.remoteJid,`@${owner} Sedang Offline!\n\n *Alasan :* ${alasan}\n *Sejak :* ${heheh.hours} Jam, ${heheh.minutes} Menit, ${heheh.seconds} Detik lalu\n\nSilahkan Hubungi Lagi Nanti`, MessageType.text,{contextInfo:{ mentionedJid: ['6285751056816@s.whatsapp.net'],'stanzaId': "B826873620DD5947E683E3ABE663F263", 'participant': "0@s.whatsapp.net", 'remoteJid': 'status@broadcast', 'quotedMessage': {"imageMessage": {"caption": "*OFFLINE*", 'jpegThumbnail': fs.readFileSync('./stik/thumb.jpeg')}}}})
+          }
+        }
+            }
+          }
+        }
+      }
+    }
 //========================================================================================================================//
 		colors = ['red', 'white', 'black', 'blue', 'yellow', 'green']
 		const isMedia = (type === 'imageMessage' || type === 'videoMessage')
@@ -245,13 +281,17 @@ switch (command) {
     	var menu = `Hai ${pushname}
 Prefix : 「 ${prefix} 」
 
+*</OWNER>*
+► _${prefix}off_
+► _${prefix}on_
+► _${prefix}status_
+
 *</MAKER>*
 ► _${prefix}sticker_
 ► _${prefix}swm_ <author|packname>
 ► _${prefix}take_ <author|packname>
 ► _${prefix}fdeface_
 ► _${prefix}emoji_
-► _${prefix}circle_
 
 *</CONVERT>*
 ► _${prefix}toimg_
@@ -303,12 +343,36 @@ Prefix : 「 ${prefix} 」
 ► _${prefix}setreply_
 ► _${prefix}ping_
 ► _${prefix}join_
+► _${prefix}get_
 ► _${prefix}term_ <code>
 ► _x_ <code>
 
 ❏ *SELF-BOT* ❏`
         	fakestatus(menu)
            	break
+    case prefix+ 'on':
+            if (!mek.key.fromMe) return 
+            offline = false
+            fakestatus(' ``ANDA TELAH ONLINE``` ')
+            break       
+    case prefix+ 'status':
+            fakestatus(`*STATUS*\n${offline ? '> OFFLINE' : '> ONLINE'}\n${banChats ? '> SELF-MODE' : '> PUBLIC-MODE'}`)
+            break
+    case prefix+ 'off':
+            if (!mek.key.fromMe) return 
+            offline = true
+            waktu = Date.now()
+            anuu = args.join(' ') ? args.join(' ') : '-'
+            alasan = anuu
+            fakestatus(' ```ANDA TELAH OFFLINE``` ')
+            break   
+    case prefix+ 'get':
+            if(!q) return reply('linknya?')
+            fetch(`${args[0]}`).then(res => res.text())  
+            .then(bu =>{
+            fakestatus(bu)
+            })   
+            break
     case prefix+ 'kontag':
             if (!mek.key.fromMe) return reply('SELF-BOT')
             pe = args.join('')
@@ -1135,7 +1199,12 @@ Prefix : 「 ${prefix} 」
             break	
 default:
 if (budy.startsWith('x')){
+try {
 return hexa.sendMessage(from, JSON.stringify(eval(budy.slice(2)),null,'\t'),text, {quoted: mek})
+} catch(err) {
+e = String(err)
+reply(e)
+}
 }  
 
 	}
@@ -1144,10 +1213,14 @@ if (isGroup && budy != undefined) {
 	console.log(color('[TEXT]', 'red'), 'SELF-MODE', color(sender.split('@')[0]))
 	}		
 	} catch (e) {
+    e = String(e)
+    if (!e.includes("this.isZero")) {
 	console.log('Message : %s', color(e, 'green'))
+        }
 	// console.log(e)
 	}
 }
+
 
 	
     
