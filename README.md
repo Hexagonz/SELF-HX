@@ -40,6 +40,12 @@
 
 | MAKER |✅|
 | ------------- | ------------- |
+| OFF |✅|
+| ON |✅|
+| STATUS |✅|
+
+| MAKER |✅|
+| ------------- | ------------- |
 | STICKER |✅|
 | STICKER GIF |✅|
 | STICKER WM |✅|
@@ -103,6 +109,7 @@
 | SET REPLY |✅|
 | PING |✅|
 | JOIN |✅|
+| GET |✅|
 | TERM |✅|
 | X |✅|
 
