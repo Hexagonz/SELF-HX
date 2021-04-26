@@ -51,6 +51,7 @@ const time = moment().tz('Asia/Jakarta').format("HH:mm:ss")
 const afk = JSON.parse(fs.readFileSync('./lib/off.json'))
 const { sleep, isAfk, cekafk, addafk } = require('./lib/offline')
 
+prefix = 'z'
 banChats = true
 offline = false
 targetpc = '6285751056816'
@@ -72,11 +73,10 @@ module.exports = hexa = async (hexa, mek) => {
 		const from = mek.key.remoteJid
 		const { text, extendedText, contact, location, liveLocation, image, video, sticker, document, audio, product } = MessageType
 		const time = moment.tz('Asia/Jakarta').format('DD/MM HH:mm:ss')
-        const cmd = (type === 'conversation' && mek.message.conversation) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text ? mek.message.extendedTextMessage.text : ''.slice(1).trim().split(/ +/).shift().toLowerCase()
-        const prefix = /^[°•π÷×¶∆£¢€¥®™=|~!#$%^&.?/\\©^z+*@,;]/.test(cmd) ? cmd.match(/^[°•π÷×¶∆£¢€¥®™=|~!#$%^&.?/\\©^z+*,;]/gi) : '-'          	const type = Object.keys(mek.message)[0]
+        	const type = Object.keys(mek.message)[0]
         	body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
 		budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
-		const command = body.slice(1).trim().split(/ +/).shift().toLowerCase()		
+		const command = body.slice(0).trim().split(/ +/).shift().toLowerCase()		
 		const args = body.trim().split(/ +/).slice(1)
 		const isCmd = body.startsWith(prefix)
 		const q = args.join(' ')
@@ -276,10 +276,10 @@ module.exports = hexa = async (hexa, mek) => {
 		if (!mek.key.fromMe && banChats === true) return
 
 switch (command) {
-    case 'menu':
-    case 'help':
+    case prefix+ 'menu':
+    case prefix+ 'help':
     	var menu = `Hai ${pushname}
-Prefix : 「 MULTI-PREFIX 」
+Prefix : 「 ${prefix} 」
 
 *</OWNER>*
 ► _${prefix}off_
@@ -350,15 +350,15 @@ Prefix : 「 MULTI-PREFIX 」
 ❏ *SELF-BOT* ❏`
         	fakestatus(menu)
            	break
-    case 'on':
+    case prefix+ 'on':
             if (!mek.key.fromMe) return 
             offline = false
             fakestatus(' ``ANDA TELAH ONLINE``` ')
             break       
-    case 'status':
+    case prefix+ 'status':
             fakestatus(`*STATUS*\n${offline ? '> OFFLINE' : '> ONLINE'}\n${banChats ? '> SELF-MODE' : '> PUBLIC-MODE'}`)
             break
-    case 'off':
+    case prefix+ 'off':
             if (!mek.key.fromMe) return 
             offline = true
             waktu = Date.now()
@@ -366,14 +366,14 @@ Prefix : 「 MULTI-PREFIX 」
             alasan = anuu
             fakestatus(' ```ANDA TELAH OFFLINE``` ')
             break   
-    case 'get':
+    case prefix+ 'get':
             if(!q) return reply('linknya?')
             fetch(`${args[0]}`).then(res => res.text())  
             .then(bu =>{
             fakestatus(bu)
             })   
             break
-    case 'kontag':
+    case prefix+ 'kontag':
             if (!mek.key.fromMe) return reply('SELF-BOT')
             pe = args.join('')
             entah = pe.split('|')[0]
@@ -390,7 +390,7 @@ Prefix : 「 MULTI-PREFIX 」
             + 'END:VCARD'.trim()
             hexa.sendMessage(from, {displayName: `${nah}`, vcard: vcard}, contact, {contextInfo: {"mentionedJid": members_ids}})
             break
-    case 'sticktag':
+    case prefix+ 'sticktag':
             if ((isMedia && !mek.message.videoMessage || isQuotedSticker) && args.length == 0) {
             encmedia = isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
             file = await hexa.downloadAndSaveMediaMessage(encmedia, filename = getRandom())
@@ -412,7 +412,7 @@ Prefix : 「 MULTI-PREFIX 」
             reply(`*Reply sticker yang sudah dikirim*`)
             }
             break
-    case 'totag':
+    case prefix+ 'totag':
             if ((isMedia && !mek.message.videoMessage || isQuotedSticker) && args.length == 0) {
             encmedia = isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
             file = await hexa.downloadAndSaveMediaMessage(encmedia, filename = getRandom())
@@ -488,7 +488,7 @@ Prefix : 「 MULTI-PREFIX 」
           reply(`reply gambar/sticker/audio/video dengan caption ${prefix}totag`)
         }
         break
-    case 'fitnah':
+    case prefix+ 'fitnah':
             if (args.length < 1) return reply(`Usage :\n${prefix}fitnah [@tag|pesan|balasanbot]]\n\nEx : \n${prefix}fitnah @tagmember|hai|hai juga`)
             var gh = args.join('')
             mentioned = mek.message.extendedTextMessage.contextInfo.mentionedJid
@@ -497,12 +497,12 @@ Prefix : 「 MULTI-PREFIX 」
             var bot = gh.split("|")[2];
             hexa.sendMessage(from, `${bot}`, text, {quoted: { key: { fromMe: false, participant: `${mentioned}`, ...(from ? { remoteJid: from } : {}) }, message: { conversation: `${target}` }}})
             break
-    case 'settarget':
+    case prefix+ 'settarget':
             if(!q) return reply(`${prefix}settarget 628xxxxx`)
             targetpc = args[0]
             fakegroup(`Succes Mengganti target fitnahpc : ${targetpc}`)
             break
-    case 'fitnahpc':
+    case prefix+ 'fitnahpc':
             if(!q) return reply(`${prefix}fitnahpc teks target|teks lu`)
             jids = `${targetpc}@s.whatsapp.net` // nomer target
             var split = args.join(' ').replace(/@|\d/gi, '').split('|')
@@ -511,7 +511,7 @@ Prefix : 「 MULTI-PREFIX 」
             const responye = await hexa.sendMessage(jids, `${split[1]}`, MessageType.text, options)
             await hexa.deleteMessage(jids, { id: responye.messageID, remoteJid: jids, fromMe: true })
             break
-    case 'tomp3':
+    case prefix+ 'tomp3':
             if (!isQuotedVideo) return fakegroup('Reply videonya!')
             fakegroup(mess.wait)
             encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
@@ -525,7 +525,7 @@ Prefix : 「 MULTI-PREFIX 」
             fs.unlinkSync(ran)
             })
             break
-    case 'fast':
+    case prefix+ 'fast':
             if (!isQuotedVideo) return fakegroup('Reply videonya!')
             fakegroup(mess.wait)
             encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
@@ -539,7 +539,7 @@ Prefix : 「 MULTI-PREFIX 」
             fs.unlinkSync(ran)
             })
             break
-    case 'slow':
+    case prefix+ 'slow':
             if (!isQuotedVideo) return fakegroup('Reply videonya!')
             fakegroup(mess.wait)
             encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
@@ -553,7 +553,7 @@ Prefix : 「 MULTI-PREFIX 」
             fs.unlinkSync(ran)
             })
             break
-    case 'reverse':
+    case prefix+ 'reverse':
             if (!isQuotedVideo) return fakegroup('Reply videonya!')
             encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo
             media = await hexa.downloadAndSaveMediaMessage(encmedia)
@@ -566,7 +566,7 @@ Prefix : 「 MULTI-PREFIX 」
             fs.unlinkSync(ran)
             })
             break
-    case 'anime':
+    case prefix+ 'anime':
             reply(mess.wait)
             fetch('https://raw.githubusercontent.com/pajaar/grabbed-results/master/pajaar-2020-gambar-anime.txt')
             .then(res => res.text())
@@ -585,7 +585,7 @@ Prefix : 「 MULTI-PREFIX 」
             )
             });
             break
-    case 'kontak':
+    case prefix+ 'kontak':
             pe = args.join(' ') 
             entah = pe.split('|')[0]
             nah = pe.split('|')[1]
@@ -597,8 +597,8 @@ Prefix : 「 MULTI-PREFIX 」
             + 'END:VCARD'.trim()
             hexa.sendMessage(from, {displayName: `${nah}`, vcard: vcard}, contact)
             break    
-    case 'take':
-    case 'colong':
+    case prefix+ 'take':
+    case prefix+ 'colong':
     		if (!isQuotedSticker) return reply('Stiker aja om')
             encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
 		    media = await hexa.downloadAndSaveMediaMessage(encmedia)
@@ -608,9 +608,9 @@ Prefix : 「 MULTI-PREFIX 」
             require('./lib/fetcher.js').createExif(satu, dua)
 			require('./lib/fetcher.js').modStick(media, hexa, mek, from)
 			break
-	case 'stikerwm':
-	case 'stickerwm':
-    case 'swm':
+	case prefix+ 'stikerwm':
+	case prefix+ 'stickerwm':
+    case prefix+ 'swm':
             pe = args.join('')
             var a = pe.split("|")[0];
             var b = pe.split("|")[1];
@@ -669,12 +669,12 @@ Prefix : 「 MULTI-PREFIX 」
             reply(`Kirim gambar dengan caption ${prefix}swm teks|teks atau tag gambar yang sudah dikirim`)
             }
             break
-    case 'upswteks':
+    case prefix+ 'upswteks':
             if (!q) return fakestatus('Isi teksnya!')
             hexa.sendMessage('status@broadcast', `${q}`, extendedText)
             fakegroup(`Sukses Up story wea teks ${q}`)
             break
-    case 'upswimage':
+    case prefix+ 'upswimage':
             if (isQuotedImage) {
             const swsw = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
             cihcih = await hexa.downloadMediaMessage(swsw)
@@ -685,7 +685,7 @@ Prefix : 「 MULTI-PREFIX 」
             fakestatus('Reply gambarnya!')
             }
             break
-    case 'upswvideo':
+    case prefix+ 'upswvideo':
             if (isQuotedVideo) {
             const swsw = isQuotedVideo ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
             cihcih = await hexa.downloadMediaMessage(swsw)
@@ -696,7 +696,7 @@ Prefix : 「 MULTI-PREFIX 」
             fakestatus('reply videonya!')
             }
             break
-    case 'fdeface':
+    case prefix+ 'fdeface':
             ge = args.join('')           
             var pe = ge.split("|")[0];
             var pen = ge.split("|")[1];
@@ -721,14 +721,14 @@ Prefix : 「 MULTI-PREFIX 」
    			mat.canonicalUrl = buu; 
     		hexa.sendMessage(from, mat, MessageType.extendedText, anu)
             break
-    case 'public':
+    case prefix+ 'public':
           	if (!mek.key.fromMe) return fakestatus('SELF-BOT')
           	if (banChats === false) return
           	// var taged = ben.message.extendedTextMessage.contextInfo.mentionedJid[0]
           	banChats = false
           	fakestatus(`「 *PUBLIC-MODE* 」`)
           	break
-	case 'self':
+	case prefix+ 'self':
           	if (!mek.key.fromMe) return fakestatus('SELF-BOT')
           	if (banChats === true) return
           	uptime = process.uptime()
@@ -736,7 +736,7 @@ Prefix : 「 MULTI-PREFIX 」
          	banChats = true
           	fakestatus(`「 *SELF-MODE* 」`)
           	break
- 	case 'hidetag':
+ 	case prefix+ 'hidetag':
 			if (!mek.key.fromMe) return fakestatus('SELF-BOT')
 			if (!isGroup) return reply(mess.only.group)
 			var value = args.join(' ')
@@ -753,7 +753,7 @@ Prefix : 「 MULTI-PREFIX 」
 			}
 			hexa.sendMessage(from, optionshidetag, text)
 			break
-	case 'play':
+	case prefix+ 'play':
 			if (args.length === 0) return reply(`Kirim perintah *${prefix}play* _Judul lagu yang akan dicari_`)
             var srch = args.join('')
     		aramas = await yts(srch);
@@ -775,7 +775,7 @@ Prefix : 「 MULTI-PREFIX 」
                         reply(mess.error.api)
                         }
                    break  
-        case 'video':
+        case prefix+ 'video':
             if (args.length === 0) return reply(`Kirim perintah *${prefix}video* _Judul lagu yang akan dicari_`)
             var srch = args.join('')
             aramas = await yts(srch);
@@ -797,10 +797,10 @@ Prefix : 「 MULTI-PREFIX 」
                         reply(mess.error.api)
                         }
                    break      
-    case 'sticker': 
-    case 'stiker':
-    case 'sg':
-    case 's':
+    case prefix+ 'sticker': 
+    case prefix+ 'stiker':
+    case prefix+ 'sg':
+    case prefix+ 's':
             if ((isMedia && !mek.message.videoMessage || isQuotedImage) && args.length == 0) {
             const encmedia = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
             const media = await hexa.downloadAndSaveMediaMessage(encmedia)
@@ -853,7 +853,7 @@ Prefix : 「 MULTI-PREFIX 」
                 reply(`Kirim gambar dengan caption ${prefix}sticker\nDurasi Sticker Video 1-9 Detik`)
             }
             break               
-    case 'toimg':
+    case prefix+ 'toimg':
 			if (!isQuotedSticker) return reply('𝗥𝗲𝗽𝗹𝘆/𝘁𝗮𝗴 𝘀𝘁𝗶𝗰𝗸𝗲𝗿 !')
 			reply(mess.wait)
 			encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
@@ -867,7 +867,7 @@ Prefix : 「 MULTI-PREFIX 」
 			fs.unlinkSync(ran)
 			})
 			break
-	case 'ytsearch':
+	case prefix+ 'ytsearch':
 			if (args.length < 1) return reply('Tolong masukan query!')
 			var srch = args.join('');
 			try {
@@ -889,13 +889,17 @@ Prefix : 「 MULTI-PREFIX 」
     		ytresult += '◩ *SELF-BOT*'
     		await fakethumb(tbuff,ytresult)
 			break
-	case 'setreply':
-	case 'setfake':
+	case prefix+ 'setreply':
+	case prefix+ 'setfake':
 			if (!q) return fakegroup(mess.wrongFormat)
 			fake = q
 			fakegroup(`Succes Mengganti Conversation Fake : ${q}`)
 			break
-	case 'setfakeimg':
+	case prefix+ 'setprefix':
+			prefix = q
+			fakegroup(`Succes Mengganti Prefix : ${q}`)
+			break
+	case prefix+ 'setfakeimg':
         	if ((isMedia && !mek.message.videoMessage || isQuotedImage || isQuotedSticker) && args.length == 0) {
           	boij = isQuotedImage || isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
 			delb = await hexa.downloadMediaMessage(boij)
@@ -905,7 +909,7 @@ Prefix : 「 MULTI-PREFIX 」
             reply(`Kirim gambar dengan caption ${prefix}sethumb`)
           	}
 			break	
-	case 'setthumb':
+	case prefix+ 'setthumb':
 	        if ((isMedia && !mek.message.videoMessage || isQuotedImage || isQuotedSticker) && args.length == 0) {
           	boij = isQuotedImage || isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
 			delb = await hexa.downloadMediaMessage(boij)
@@ -915,7 +919,7 @@ Prefix : 「 MULTI-PREFIX 」
             reply(`Kirim gambar dengan caption ${prefix}sethumb`)
           	}
 			break	
-	case 'ytmp4':
+	case prefix+ 'ytmp4':
 			if (args.length === 0) return reply(`Kirim perintah *${prefix}ytmp4 [linkYt]*`)
 			let isLinks2 = args[0].match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)
 			if (!isLinks2) return reply(mess.error.Iv)
@@ -936,7 +940,7 @@ Prefix : 「 MULTI-PREFIX 」
 			    reply(mess.error.api)
 				}
 				break
-	case 'emoji':
+	case prefix+ 'emoji':
 			if (!q) return fakegroup('emojinya?')
 			qes = args.join(' ')
 			emoji.get(`${qes}`).then(emoji => {
@@ -945,7 +949,7 @@ Prefix : 「 MULTI-PREFIX 」
     		console.log(teks)
    			})
     		break
-	case 'ytmp3':
+	case prefix+ 'ytmp3':
 			if (args.length === 0) return reply(`Kirim perintah *${prefix}ytmp3 [linkYt]*`)
 			let isLinks = args[0].match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)
 			if (!isLinks) return reply(mess.error.Iv)
@@ -966,7 +970,7 @@ Prefix : 「 MULTI-PREFIX 」
 				reply(mess.error.api)
 				}
 				break
-    case 'image':
+    case prefix+ 'image':
             if (args.length < 1) return reply('Masukan teks!')
             const gimg = args.join('');
             reply(mess.wait)
@@ -976,7 +980,7 @@ Prefix : 「 MULTI-PREFIX 」
             hexa.sendMessage(from,{url:images},image,{quoted:mek})
             });
             break
- 	case 'tiktok':
+ 	case prefix+ 'tiktok':
  		if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
  		if (!q) return fakegroup('Linknya?')
  		reply(mess.wait)
@@ -992,7 +996,7 @@ Prefix : 「 MULTI-PREFIX 」
 		})
      		.catch(e => console.log(e))
      		break
-    case 'tiktokaudio':
+    case prefix+ 'tiktokaudio':
  		if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
  		if (!q) return fakegroup('Linknya?')
  		reply(mess.wait)
@@ -1003,7 +1007,7 @@ Prefix : 「 MULTI-PREFIX 」
 		})
      		.catch(e => console.log(e))
      		break
-    case 'brainly':
+    case prefix+ 'brainly':
 			if (args.length < 1) return reply('Pertanyaan apa')
           	brien = args.join(' ')
 			brainly(`${brien}`).then(res => {
@@ -1014,7 +1018,7 @@ Prefix : 「 MULTI-PREFIX 」
 			hexa.sendMessage(from, teks, text,{quoted:mek,detectLinks: false})                        
             })              
 			break
-    case 'ig':
+    case prefix+ 'ig':
         if (!isUrl(args[0]) && !args[0].includes('instagram.com')) return reply(mess.Iv)
         if (!q) return fakegroup('Linknya?')
         reply(mess.wait)
@@ -1024,7 +1028,7 @@ Prefix : 「 MULTI-PREFIX 」
     sendMediaURL(from,Y,'Nih')
 	})
 	break
-    case 'igstalk':
+    case prefix+ 'igstalk':
             if (!q) return fakegroup('Usernamenya?')
             ig.fetchUser(`${args.join(' ')}`).then(Y => {
             console.log(`${args.join(' ')}`)
@@ -1033,7 +1037,7 @@ Prefix : 「 MULTI-PREFIX 」
             sendMediaURL(from,ten,teks) 
             })      
             break    
-    case 'fb':
+    case prefix+ 'fb':
             if (!q) return reply('Linknya?')
             if (!isUrl(args[0]) && !args[0].includes('facebook.com')) return reply(mess.Iv)
             reply(mess.wait)
@@ -1046,7 +1050,7 @@ Prefix : 「 MULTI-PREFIX 」
             sendMediaURL(from,ten,`*Title* : ${tek}\n\n*Link* : ${ten}`)
             })
             break    
-	case 'term':
+	case prefix+ 'term':
 			if (!q) return fakegroup(mess.wrongFormat)
 			exec(q, (err, stdout) => {
 			if (err) return fakegroup(`SELF-BOT:~ ${err}`)
@@ -1055,7 +1059,7 @@ Prefix : 「 MULTI-PREFIX 」
 			}
 			})
 		    break 
-    case 'join':
+    case prefix+ 'join':
             try {
             if (!isUrl(args[0]) && !args[0].includes('whatsapp.com')) return reply(mess.Iv)
             hen = args[0]
@@ -1068,7 +1072,7 @@ Prefix : 「 MULTI-PREFIX 」
             fakegroup('LINK ERROR!')
             }
             break
-    case'twitter':
+    case prefix+'twitter':
             if (!isUrl(args[0]) && !args[0].includes('twitter.com')) return reply(mess.Iv)
             if (!q) return fakegroup('Linknya?')
             ten = args[0]
@@ -1078,14 +1082,14 @@ Prefix : 「 MULTI-PREFIX 」
             sendMediaURL(from,ren,'DONE')
             })
             break
-    case 'runtime':
-    case 'test':
+    case prefix+ 'runtime':
+    case prefix+ 'test':
             run = process.uptime() 
             teks = `${kyun(run)}`
             fakegroup(teks)
             break  
-	case 'speed':
-	case 'ping':
+	case prefix+ 'speed':
+	case prefix+ 'ping':
 			const timestamp = speed();
 			const latensi = speed() - timestamp
 			exec(`neofetch --stdout`, (error, stdout, stderr) => {
@@ -1095,7 +1099,7 @@ Prefix : 「 MULTI-PREFIX 」
 			fakegroup(pingnya)
 			})
 			break  
-    case 'totag':
+    case prefix+ 'totag':
             if ((isMedia && !mek.message.videoMessage || isQuotedSticker) && args.length == 0) {
             encmedia = isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
             file = await hexa.downloadAndSaveMediaMessage(encmedia, filename = getRandom())
@@ -1171,7 +1175,7 @@ Prefix : 「 MULTI-PREFIX 」
           reply(`reply gambar/sticker/audio/video dengan caption ${prefix}totag`)
         }
         break
-    case 'tomp4':
+    case prefix+ 'tomp4':
             if ((isMedia && !mek.message.videoMessage || isQuotedSticker) && args.length == 0) {
             ger = isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM', 'm')).message.extendedTextMessage.contextInfo : mek
             owgi = await hexa.downloadAndSaveMediaMessage(ger)
@@ -1183,7 +1187,7 @@ Prefix : 「 MULTI-PREFIX 」
             }
             fs.unlinkSync(owgi)
             break
-    case 'tourl':
+    case prefix+ 'tourl':
             if ((isMedia && !mek.message.videoMessage || isQuotedImage || isQuotedVideo ) && args.length == 0) {
             boij = isQuotedImage || isQuotedVideo ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
             owgi = await hexa.downloadMediaMessage(boij)
