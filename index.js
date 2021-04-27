@@ -1019,12 +1019,19 @@ Prefix : 「 MULTI-PREFIX 」
         if (!isUrl(args[0]) && !args[0].includes('instagram.com')) return reply(mess.Iv)
         if (!q) return fakegroup('Linknya?')
         reply(mess.wait)
-	igdl(args[0])
-	.then((result) => {
-    for (Y of result.url_list )
-    sendMediaURL(from,Y,'Nih')
-	})
-	break
+	    igdl(args[0])
+	    .then(async(result) => {
+            for (let ink of result.url_list)	{
+            if (ink.includes('.mp4')){
+            const igvdl = await getBuffer(ink)	
+	    hexa.sendMessage(from,igvdl,video,{mimetype:'video/mp4',quoted:mek,caption:'Nih'})
+            } else if (ink.includes('.jpg')){
+            const igpdl = await getBuffer(ink)
+            hexa.sendMessage(from,igpdl,image,{mimetype:'image/jpeg',quoted:mek,caption:'Nih'})
+	    }
+            }
+	    })
+	    break
     case 'igstalk':
             if (!q) return fakegroup('Usernamenya?')
             ig.fetchUser(`${args.join(' ')}`).then(Y => {
