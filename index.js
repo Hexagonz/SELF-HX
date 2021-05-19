@@ -45,7 +45,7 @@ const { error } = require("qrcode-terminal")
 const { getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, banner, start, info, success, close } = require('./lib/functions')
 const { color, bgcolor } = require('./lib/color')
 const { fetchJson, getBase64, kyun, createExif } = require('./lib/fetcher')
-const { yta, ytv, igdl, upload } = require('./lib/ytdl')
+const { yta, ytv, igdl, upload, formatDate } = require('./lib/ytdl')
 const { webp2mp4File} = require('./lib/webp2mp4')
 const time = moment().tz('Asia/Jakarta').format("HH:mm:ss")
 const afk = JSON.parse(fs.readFileSync('./lib/off.json'))
@@ -343,6 +343,7 @@ Prefix : 「 MULTI-PREFIX 」
 ► _${prefix}setfakeimg_
 ► _${prefix}setreply_
 ► _${prefix}ping_
+► _${prefix}inspect_
 ► _${prefix}join_
 ► _${prefix}get_
 ► _${prefix}term_ <code>
@@ -1219,18 +1220,18 @@ ${owner ? `*Owner* : @${owner.split('@')[0]}` : '*Owner* : -'}
 *Jumlah Member* : ${size}
 ${desc ? `*Desc* : ${desc}` : '*Desc* : tidak ada'}
 *Id desc* : ${descId}
-*Desc di ganti oleh* : @${descOwner.split('@')[0]}\n*Tanggal* : ${formatDate(descTime * 1000)}\n\n*Kontak yang tersimpan*\n`
-            for ( let y of participants) {
-              par += `> @${y.id.split('@')[0]}\n*Admin* : ${y.isAdmin ? 'Ya' : 'Tidak'}\n`
-              jids.push(`${y.id.replace(/@c.us/g,'@s.whatsapp.net')}`)
-              jids.push(`${owner.replace(/@c.us/g,'@s.whatsapp.net')}`)
-              jids.push(`${descOwner.replace(/@c.us/g,'@s.whatsapp.net')}`)
-              }
-              mentions(par,jids,true)
-              } catch {
-              reply('Link error')
-              }
-              break
+${descOwner ? `*Desc diubah oleh* : @${descOwner.split('@')[0]}` : '*Desc diubah oleh* : -'}\n*Tanggal* : ${descTime ? `${formatDate(descTime * 1000)}` : '-'}\n\n*Kontak yang tersimpan*\n`
+           for ( let y of participants) {
+             par += `> @${y.id.split('@')[0]}\n*Admin* : ${y.isAdmin ? 'Ya' : 'Tidak'}\n`
+             jids.push(`${y.id.replace(/@c.us/g,'@s.whatsapp.net')}`)
+             jids.push(`${owner ? `${owner.replace(/@c.us/g,'@s.whatsapp.net')}` : '-'}`)
+             jids.push(`${descOwner ? `${descOwner.replace(/@c.us/g,'@s.whatsapp.net')}` : '-'}`)
+             }
+             hexa.sendMessage(from,par,text,{quoted:mek,contextInfo:{mentionedJid:jids}})
+             } catch {
+             reply('Link error')
+             }
+             break
 default:
 if (budy.startsWith('x')){
 try {
