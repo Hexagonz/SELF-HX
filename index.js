@@ -1201,6 +1201,36 @@ Prefix : 「 MULTI-PREFIX 」
             reply('kirim/reply gambar/video')
             }
             break	
+    case 'inspect':
+            try {
+            if (!isUrl(args[0]) && !args[0].includes('whatsapp.com')) return reply(mess.Iv)
+            if (!q) return reply('masukan link wa')
+            cos = args[0]
+            var net = cos.split('https://chat.whatsapp.com/')[1]
+            if (!net) return reply('pastikan itu link https://whatsapp.com/')
+            jids = []
+            let { id, owner, subject, subjectOwner, desc, descId, participants, size, descOwner, descTime, creation} = await hexa.query({ 
+            json: ["query", "invite",net],
+            expect200:true })
+            let par = `*Id* : ${id}
+${owner ? `*Owner* : @${owner.split('@')[0]}` : '*Owner* : -'}
+*Nama Gc* : ${subject}
+*Gc dibuat Tanggal* : ${formatDate(creation * 1000)}
+*Jumlah Member* : ${size}
+${desc ? `*Desc* : ${desc}` : '*Desc* : tidak ada'}
+*Id desc* : ${descId}
+*Desc di ganti oleh* : @${descOwner.split('@')[0]}\n*Tanggal* : ${formatDate(descTime * 1000)}\n\n*Kontak yang tersimpan*\n`
+            for ( let y of participants) {
+              par += `> @${y.id.split('@')[0]}\n*Admin* : ${y.isAdmin ? 'Ya' : 'Tidak'}\n`
+              jids.push(`${y.id.replace(/@c.us/g,'@s.whatsapp.net')}`)
+              jids.push(`${owner.replace(/@c.us/g,'@s.whatsapp.net')}`)
+              jids.push(`${descOwner.replace(/@c.us/g,'@s.whatsapp.net')}`)
+              }
+              mentions(par,jids,true)
+              } catch {
+              reply('Link error')
+              }
+              break
 default:
 if (budy.startsWith('x')){
 try {
