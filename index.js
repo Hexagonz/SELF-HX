@@ -17,6 +17,7 @@ const
 		mentionedJid,
 		processTime,
 	} = require("@adiwajshing/baileys")
+const hx = require('hxz-api')
 const qrcode = require("qrcode-terminal")
 const moment = require("moment-timezone")
 const speed = require('performance-now')
@@ -26,12 +27,9 @@ const fs = require("fs")
 const axios = require("axios")
 const ffmpeg = require('fluent-ffmpeg')
 const { EmojiAPI } = require("emoji-api");
-const tik = require('tiktok-scraper-without-watermark')
 const ig = require('insta-fetcher')
 const emoji = new EmojiAPI()
 const fetch = require('node-fetch');
-const Fb = require('fb-video-downloader');
-const twitterGetUrl = require("twitter-url-direct")
 const phoneNum = require('awesome-phonenumber')
 const gis = require('g-i-s');
 const got = require("got");
@@ -50,6 +48,9 @@ const { webp2mp4File} = require('./lib/webp2mp4')
 const time = moment().tz('Asia/Jakarta').format("HH:mm:ss")
 const afk = JSON.parse(fs.readFileSync('./lib/off.json'))
 const { sleep, isAfk, cekafk, addafk } = require('./lib/offline')
+const voting = JSON.parse(fs.readFileSync('./lib/voting.json'))
+const { addVote, delVote } = require('./lib/vote')
+
 
 banChats = true
 offline = false
@@ -75,7 +76,7 @@ module.exports = hexa = async (hexa, mek) => {
                 const type = Object.keys(mek.message)[0]        
                 const cmd = (type === 'conversation' && mek.message.conversation) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text ? mek.message.extendedTextMessage.text : ''.slice(1).trim().split(/ +/).shift().toLowerCase()
                 const prefix = /^[°•π÷×¶∆£¢€¥®™=|~!#$%^&.?/\\©^z+*@,;]/.test(cmd) ? cmd.match(/^[°•π÷×¶∆£¢€¥®™=|~!#$%^&.?/\\©^z+*,;]/gi) : '-'          	
-        	body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
+        body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''
 		budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
 		const command = body.slice(1).trim().split(/ +/).shift().toLowerCase()		
 		const args = body.trim().split(/ +/).slice(1)
@@ -97,6 +98,7 @@ module.exports = hexa = async (hexa, mek) => {
 		const groupAdmins = isGroup ? getGroupAdmins(groupMembers) : ''
 		const isBotGroupAdmins = groupAdmins.includes(botNumber) || false
 		const isGroupAdmins = groupAdmins.includes(sender) || false
+        const isVote = isGroup ? voting.includes(from) : false
         const conts = mek.key.fromMe ? hexa.user.jid : hexa.contacts[sender] || { notify: jid.replace(/@.+/, '') }
         const pushname = mek.key.fromMe ? hexa.user.name : conts.notify || conts.vname || conts.name || '-'
 
@@ -274,8 +276,54 @@ module.exports = hexa = async (hexa, mek) => {
       	//if (!isGroup && !isCmd) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;31mTEXT\x1b[1;37m]', time, color('Message'), 'from', color(sender.split('@')[0]), 'args :', color(args.length))
      	if (isCmd && isGroup) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;32mEXEC\x1b[1;37m]', time, color(command), 'from', color(sender.split('@')[0]), 'in', color(groupName), 'args :', color(args.length))
       	//if (!isCmd && isGroup) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;31mTEXT\x1b[1;37m]', time, color('Message'), 'from', color(sender.split('@')[0]), 'in', color(groupName), 'args :', color(args.length))
-		if (!mek.key.fromMe && banChats === true) return
-
+	    if(isGroup && !isVote) {
+        if (budy.toLowerCase() === 'vote'){
+        let vote = JSON.parse(fs.readFileSync(`./lib/${from}.json`))
+        let _votes = JSON.parse(fs.readFileSync(`./lib/vote/${from}.json`))  
+        let fil = vote.map(v => v.participant)
+        let id_vote = sender ? sender : '6285751056816@s.whatsapp.net'
+        if(fil.includes(id_vote)) {
+        return mentions('@'+sender.split('@')[0]+' Anda sudah vote', fil, true)
+        } else {
+        vote.push({
+            participant: id_vote,
+            voting: '✅'
+        })
+        fs.writeFileSync(`./lib/${from}.json`,JSON.stringify(vote))
+        let _p = []
+        let _vote = '*Vote* '+ '@'+ _votes[0].votes.split('@')[0] + `\n\n*Alasan*: ${_votes[0].reason}\n*Jumlah Vote* : ${vote.length} Vote\n*Durasi* : ${_votes[0].durasi} Menit\n\n` 
+        for(let i = 0; i < vote.length; i++) {
+        _vote +=  `@${vote[i].participant.split('@')[0]}\n*Vote* : ${vote[i].voting}\n\n`
+        _p.push(vote[i].participant)
+        }  
+        _p.push(_votes[0].votes)
+        mentions(_vote,_p,true)   
+        }
+        } else if (budy.toLowerCase() === 'devote'){
+        const vote = JSON.parse(fs.readFileSync(`./lib/${from}.json`))
+        let _votes = JSON.parse(fs.readFileSync(`./lib/vote/${from}.json`))  
+        let fil = vote.map(v => v.participant)
+        let id_vote = sender ? sender : '6285751056816@s.whatsapp.net'
+        if(fil.includes(id_vote)) {
+        return mentions('@'+sender.split('@')[0]+' Anda sudah vote', fil, true)
+        } else {
+        vote.push({
+            participant: id_vote,
+            voting: '❌'
+        })
+        fs.writeFileSync(`./lib/${from}.json`,JSON.stringify(vote))
+        let _p = []
+        let _vote = '*Vote* '+ '@'+ _votes[0].votes.split('@')[0] + `\n\n*Alasan*: ${_votes[0].reason}\n*Jumlah Vote* : ${vote.length} Vote\n*Durasi* : ${_votes[0].durasi} Menit\n\n` 
+        for(let i = 0; i < vote.length; i++) {
+        _vote +=  `@${vote[i].participant.split('@')[0]}\n*Vote* : ${vote[i].voting}\n\n`
+        _p.push(vote[i].participant)
+        }  
+        _p.push(_votes[0].votes)
+        mentions(_vote,_p,true)   
+        }
+    }
+}	
+        if (!mek.key.fromMe && banChats === true) return
 switch (command) {
     case 'menu':
     case 'help':
@@ -327,6 +375,7 @@ Prefix : 「 MULTI-PREFIX 」
 ► _${prefix}ytmp3_ <link>
 ► _${prefix}ytmp4_ <link>
 ► _${prefix}ig_ <link>
+► _${prefix}igstory_ <username>
 ► _${prefix}twitter_ <link>
 ► _${prefix}tiktok_ <link>
 ► _${prefix}tiktokaudio_ <link>
@@ -334,6 +383,12 @@ Prefix : 「 MULTI-PREFIX 」
 ► _${prefix}brainly_ <query>
 ► _${prefix}image_ <query>
 ► _${prefix}anime_ <random>
+► _${prefix}pinterest_ <query>
+► _${prefix}komiku_ <query>
+► _${prefix}lirik_ <query>
+► _${prefix}chara_ <query>
+► _${prefix}playstore_ <query>
+► _${prefix}otaku_ <query>
 
 *</OTHER>*
 ► _${prefix}self_
@@ -345,17 +400,147 @@ Prefix : 「 MULTI-PREFIX 」
 ► _${prefix}ping_
 ► _${prefix}inspect_
 ► _${prefix}join_
+► _${prefix}caripesan_ <query>
 ► _${prefix}get_
 ► _${prefix}term_ <code>
 ► _x_ <code>
 
+*</VOTE>*
+► _${prefix}voting_
+► _${prefix}delvote_
+► _vote_
+► _devote_
+
 ❏ *SELF-BOT* ❏`
         	fakestatus(menu)
            	break
+    case 'delvote':
+            if(!mek.key.remoteJid) return
+            if(isVote) return reply('Tidak ada sesi Voting')
+            delVote(from)
+            reply('Sukses Menghapus sesi Voting Di Grup Ini')
+            break
+    case 'voting':
+            if(!isGroupAdmins && !mek.key.fromMe) return 
+            if(!isGroup) return reply(mess.only.group)
+            if (isVote) return reply('Sesi Voting Sedang Berlangsung Di Grup Ini')
+            if(!q) return reply('*Voting*\n\n'+ prefix+ 'voting @tag target | reason  | 1 (1 = 1 Menit)')
+            if (mek.message.extendedTextMessage.contextInfo.mentionedJid.length > 0 || mek.message.extendedTextMessage.contextInfo == null) {
+            let id = mek.message.extendedTextMessage.contextInfo.mentionedJid[0]
+            split = args.join(' ').replace('@', '').split('|')
+            if(!Number(split[2])) return reply('masukan angka di baris ke 3\nContoh: 1-9999\n1 = 1 Menit')
+            await mentions('Vote ' +'@'+ id.split('@')[0]+' Di Mulai' +'\n\n' + `vote = ✅\ndevote = ❌\n\nAlasan: ${split[1]}`,[id],true)
+            addVote(from,split[1],split[0],split[2],reply)
+            }
+            break
+    case 'linkwa':
+            if(!q) return reply('cari group apa?')
+            hx.linkwa(q)
+            .then(result => {
+            let res = '*「 _LINK WA_ 」*\n\n'
+            for (let i of result) {
+            res += `*Nama*: *${i.nama}\n*Link*: ${i.link}\n\n`
+            }
+            reply(res)
+            });
+            break
+    case 'igstory': 
+            if(!q) return reply('Usernamenya?')
+            hx.igstory(q)
+            .then(async result => {
+            for(let i of result.medias){
+                if(i.url.includes('mp4')){
+                    let link = await getBuffer(i.url)
+                    hexa.sendMessage(from,link,video,{quoted: mek,caption: `Type : ${i.type}`})
+                } else {
+                    let link = await getBuffer(i.url)
+                    hexa.sendMessage(from,link,image,{quoted: mek,caption: `Type : ${i.type}`})                  
+                }
+            }
+            });
+            break
+    case 'caripesan':
+            if(!q)return reply('pesannya apa bang?')
+            let v = await hexa.searchMessages(q,from,10,1)
+            let s = v.messages
+            let el = s.filter(v => v.message)
+            el.shift()
+            try {
+            if(el[0].message.conversation == undefined) return
+            reply(`Ditemukan ${el.length} pesan`)
+            await sleep(3000)
+            for(let i = 0; i < el.length; i++) {
+            await hexa.sendMessage(from,'Nih pesannya',text,{quoted:el[i]})
+            }
+            } catch(e){
+            reply('Pesan tidak ditemukan!')
+            }           
+            break
+    case 'lirik':
+            if(!q) return reply('lagu apa?')
+            let song = await hx.lirik(q)
+            sendMediaURL(from,song.thumb,song.lirik)
+            break
+    case 'otaku':
+            if(!q) return reply('judul animenya?')
+            let anime = await hx.otakudesu(q)
+            rem = `*Judul* : ${anime.judul}
+*Jepang* : ${anime.jepang}
+*Rating* : ${anime.rate}
+*Produser* : ${anime.produser}
+*Status* : ${anime.status}
+*Episode* : ${anime.episode}
+*Durasi* : ${anime.durasi}
+*Rilis* : ${anime.rilis}
+*Studio* : ${anime.studio}
+*Genre* : ${anime.genre}\n
+*Sinopsis* :
+${anime.desc}\n\n*Link Batch* : ${anime.batch}\n*Link Download SD* : ${anime.batchSD}\n*Link Download HD* : ${anime.batchHD}`
+            ram = await getBuffer(anime.img)
+            hexa.sendMessage(from,ram,image,{quoted:mek,caption:rem})
+            break
+    case 'komiku':
+            if(!q) return reply(`judulnya?\n${prefix}komiku mao gakuin`)
+            let komik = await hx.komiku(q)
+            result = `*Title* : ${komik.title}\n
+*Title Indo* : ${komik.indo}\n
+*Update* : ${komik.update}\n
+*Desc* : ${komik.desc}\n
+*Chapter Awal* : ${komik.chapter_awal}
+*Chapter Akhir* : ${komik.chapter_akhir}`
+            sendMediaURL(from, komik.image,result)
+            break
+    case 'chara':
+            if(!q) return reply(`gambar apa?\n${prefix}chara nino`)
+            let im = await hx.chara(q)
+            let acak = im[Math.floor(Math.random() * im.length)]
+            let li = await getBuffer(acak)
+            await hexa.sendMessage(from,li,image,{quoted: mek})
+            break
+    case 'pinterest':
+            if(!q) return reply('gambar apa?')
+            let pin = await hx.pinterest(q)
+            let ac = pin[Math.floor(Math.random() * pin.length)]
+            let di = await getBuffer(ac)
+            await hexa.sendMessage(from,di,image,{quoted: mek})
+            break
+    case 'playstore':
+            if(!q) return reply('lu nyari apa?')
+            let play = await hx.playstore(q)
+            let store = '❉─────────────────────❉\n'
+            for (let i of play){
+            store += `\n*「 _PLAY STORE_ 」*\n
+- *Nama* : ${i.name}
+- *Link* : ${i.link}\n
+- *Dev* : ${i.developer}
+- *Link Dev* : ${i.link_dev}\n❉─────────────────────❉`
+            }
+            reply(store)
+            break
     case 'on':
             if (!mek.key.fromMe) return 
             offline = false
-            fakestatus(' ``ANDA TELAH ONLINE``` ')
+            fakestatus(' ```ANDA TELAH ONLINE``` ')
             break       
     case 'status':
             fakestatus(`*STATUS*\n${offline ? '> OFFLINE' : '> ONLINE'}\n${banChats ? '> SELF-MODE' : '> PUBLIC-MODE'}`)
@@ -364,7 +549,7 @@ Prefix : 「 MULTI-PREFIX 」
             if (!mek.key.fromMe) return 
             offline = true
             waktu = Date.now()
-            anuu = args.join(' ') ? args.join(' ') : '-'
+            anuu = q ? q : '-'
             alasan = anuu
             fakestatus(' ```ANDA TELAH OFFLINE``` ')
             break   
@@ -982,14 +1167,13 @@ Prefix : 「 MULTI-PREFIX 」
  		if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
  		if (!q) return fakegroup('Linknya?')
  		reply(mess.wait)
-		tik.ssstik(`${args[0]}`)
+		hx.ttdownloader(`${args[0]}`)
     		.then(result => {
-    		console.log(result)
-    		const { videonowm, videonowm2, text } = result
-    		axios.get(`https://tinyurl.com/api-create.php?url=${videonowm2}`)
+    		const { wm, nowm, audio } = result
+    		axios.get(`https://tinyurl.com/api-create.php?url=${nowm}`)
     		.then(async (a) => {
-    		me = `*Title* : ${text}\n*Link* : ${a.data}`
-		hexa.sendMessage(from,{url:`${videonowm}`},video,{mimetype:'video/mp4',quoted:mek,caption:me})
+    		me = `*Link* : ${a.data}`
+		hexa.sendMessage(from,{url:`${nowm}`},video,{mimetype:'video/mp4',quoted:mek,caption:me})
 		})
 		})
      		.catch(e => console.log(e))
@@ -998,11 +1182,11 @@ Prefix : 「 MULTI-PREFIX 」
  		if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(mess.Iv)
  		if (!q) return fakegroup('Linknya?')
  		reply(mess.wait)
- 		tik.ssstik(`${args[0]}`)
+ 		hx.ttdownloader(`${args[0]}`)
     		.then(result => {
-    		const { music,text } = result
-		hexa.sendMessage(from,{url:`${music}`},audio,{mimetype:'audio/mp4',filename : `${text}`,quoted:mek})
-		})
+    		const { audio} = result
+            sendMediaURL(from,audio,'')
+    		})
      		.catch(e => console.log(e))
      		break
     case 'brainly':
@@ -1020,18 +1204,18 @@ Prefix : 「 MULTI-PREFIX 」
         if (!isUrl(args[0]) && !args[0].includes('instagram.com')) return reply(mess.Iv)
         if (!q) return fakegroup('Linknya?')
         reply(mess.wait)
-	    igdl(args[0])
+	    hx.igdl(args[0])
 	    .then(async(result) => {
-            for (let ink of result.url_list)	{
-            if (ink.includes('.mp4')){
-            const igvdl = await getBuffer(ink)	
-	    hexa.sendMessage(from,igvdl,video,{mimetype:'video/mp4',quoted:mek,caption:'Nih'})
-            } else if (ink.includes('.jpg')){
-            const igpdl = await getBuffer(ink)
-            hexa.sendMessage(from,igpdl,image,{mimetype:'image/jpeg',quoted:mek,caption:'Nih'})
-	    }
+            for(let i of result.medias){
+                if(i.url.includes('mp4')){
+                    let link = await getBuffer(i.url)
+                    hexa.sendMessage(from,link,video,{quoted: mek,caption: `Type : ${i.type}`})
+                } else {
+                    let link = await getBuffer(i.url)
+                    hexa.sendMessage(from,link,image,{quoted: mek,caption: `Type : ${i.type}`})                  
+                }
             }
-	    })
+            });
 	    break
     case 'igstalk':
             if (!q) return fakegroup('Usernamenya?')
@@ -1047,12 +1231,10 @@ Prefix : 「 MULTI-PREFIX 」
             if (!isUrl(args[0]) && !args[0].includes('facebook.com')) return reply(mess.Iv)
             reply(mess.wait)
             te = args.join(' ')
-            fakestatus(mess.wait)
-            Fb.getInfo(`${te}`)
+            hx.fbdown(`${te}`)
             .then(G => {
-            ten = `${G.download.sd}`
-            tek = `${G.title}`
-            sendMediaURL(from,ten,`*Title* : ${tek}\n\n*Link* : ${ten}`)
+            ten = `${G.HD}`
+            sendMediaURL(from,ten,`*Link video_normal* : ${G.Normal_video}`)
             })
             break    
 	case 'term':
@@ -1081,11 +1263,9 @@ Prefix : 「 MULTI-PREFIX 」
             if (!isUrl(args[0]) && !args[0].includes('twitter.com')) return reply(mess.Iv)
             if (!q) return fakegroup('Linknya?')
             ten = args[0]
-            var res = await twitterGetUrl(`${ten}`)
-            .then(g => {
-            ren = `${g.download[2].url}`
+            var res = await hx.twitter(`${ten}`)
+            ren = `${g.HD}`
             sendMediaURL(from,ren,'DONE')
-            })
             break
     case 'runtime':
     case 'test':
