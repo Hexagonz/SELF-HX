@@ -335,9 +335,9 @@ switch (command) {
     stopjadibot(reply)
     break
     case 'listbot':
-    let text = '「 *LIST JADIBOT* 」\n'
+    let tekss = '「 *LIST JADIBOT* 」\n'
     for(let i of listjadibot) {
-    text += `*Nomor* : ${i.jid.split('@')[0]}
+    tekss += `*Nomor* : ${i.jid.split('@')[0]}
 *Nama* : ${i.name}
 *Device* : ${i.phone.device_manufacturer}
 *Model* : ${i.phone.device_model}\n\n`
@@ -1453,7 +1453,7 @@ if (isGroup && budy != undefined) {
 	}		
 	} catch (e) {
     e = String(e)
-    if (!e.includes("this.isZero") && !e.includes("jid")) {
+    if (!e.includes("this.isZero")) {
 	console.log('Message : %s', color(e, 'green'))
         }
 	// console.log(e)
