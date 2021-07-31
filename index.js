@@ -50,6 +50,7 @@ const afk = JSON.parse(fs.readFileSync('./lib/off.json'))
 const { sleep, isAfk, cekafk, addafk } = require('./lib/offline')
 const voting = JSON.parse(fs.readFileSync('./lib/voting.json'))
 const { addVote, delVote } = require('./lib/vote')
+const { jadibot, stopjadibot, listjadibot } = require('./lib/jadibot')
 
 
 banChats = true
@@ -325,6 +326,24 @@ module.exports = hexa = async (hexa, mek) => {
 }	
         if (!mek.key.fromMe && banChats === true) return
 switch (command) {
+    case 'jadibot':
+    if(!mek.key.fromMe) return reply('SELF-BOT')
+    jadibot(reply,hexa,from)
+    break
+    case 'stopjadibot':
+    if(!mek.key.fromMe)return reply('SELF-BOT')
+    stopjadibot(reply)
+    break
+    case 'listbot':
+    let text = '「 *LIST JADIBOT* 」\n'
+    for(let i of listjadibot) {
+    text += `*Nomor* : ${i.jid.split('@')[0]}
+*Nama* : ${i.name}
+*Device* : ${i.phone.device_manufacturer}
+*Model* : ${i.phone.device_model}\n\n`
+    }
+    reply(text)
+    break
     case 'menu':
     case 'help':
     	var menu = `Hai ${pushname}
@@ -404,6 +423,11 @@ Prefix : 「 MULTI-PREFIX 」
 ► _${prefix}get_
 ► _${prefix}term_ <code>
 ► _x_ <code>
+
+*</JADI BOT>*
+► _${prefix}jadibot_
+► _${prefix}stopjadibot_
+► _${prefix}listbot_
 
 *</VOTE>*
 ► _${prefix}voting_
@@ -1429,7 +1453,7 @@ if (isGroup && budy != undefined) {
 	}		
 	} catch (e) {
     e = String(e)
-    if (!e.includes("this.isZero")) {
+    if (!e.includes("this.isZero") && !e.includes("jid")) {
 	console.log('Message : %s', color(e, 'green'))
         }
 	// console.log(e)

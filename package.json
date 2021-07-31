@@ -30,6 +30,7 @@
     "ms": "^2.1.3",
     "parse-ms": "^2.1.0",
     "performance-now": "^2.1.0",
+    "qrcode": "^1.4.4",
     "qrcode-terminal": "^0.12.0",
     "qs": "^6.10.1",
     "request": "^2.88.2",
