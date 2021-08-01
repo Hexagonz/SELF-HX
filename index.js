@@ -327,11 +327,11 @@ module.exports = hexa = async (hexa, mek) => {
         if (!mek.key.fromMe && banChats === true) return
 switch (command) {
     case 'jadibot':
-    if(!mek.key.fromMe) return reply('SELF-BOT')
+    if(mek.key.fromMe) return reply('Tidak bisa jadibot di dalam bot')
     jadibot(reply,hexa,from)
     break
     case 'stopjadibot':
-    if(!mek.key.fromMe)return reply('SELF-BOT')
+    if(mek.key.fromMe)return reply('tidak bisa stopjadibot kecuali owner')
     stopjadibot(reply)
     break
     case 'listbot':
@@ -1453,7 +1453,7 @@ if (isGroup && budy != undefined) {
 	}		
 	} catch (e) {
     e = String(e)
-    if (!e.includes("this.isZero")) {
+    if (!e.includes("this.isZero") && !e.includes("jid")) {
 	console.log('Message : %s', color(e, 'green'))
         }
 	// console.log(e)
