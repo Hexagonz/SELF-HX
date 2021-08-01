@@ -342,7 +342,7 @@ switch (command) {
 *Device* : ${i.phone.device_manufacturer}
 *Model* : ${i.phone.device_model}\n\n`
     }
-    reply(text)
+    reply(tekss)
     break
     case 'menu':
     case 'help':
