@@ -1,7 +1,7 @@
 {
-  "name": "HEXAGONZ",
+  "name": "DimasBot",
   "version": "1.0.0",
-  "description": "HEXA",
+  "description": "DimasBot",
   "main": "main.js",
   "directories": {
     "lib": "lib"
