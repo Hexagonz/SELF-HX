@@ -55,8 +55,8 @@ const { jadibot, stopjadibot, listjadibot } = require('./lib/jadibot')
 
 banChats = true
 offline = false
-targetpc = '6285751056816'
-owner = '6285751056816'
+targetpc = '6282245255702'
+owner = '6282245255702'
 fake = 'HEXAGONZ'
 numbernye = '0'
 waktu = '-'
@@ -282,7 +282,7 @@ module.exports = hexa = async (hexa, mek) => {
         let vote = JSON.parse(fs.readFileSync(`./lib/${from}.json`))
         let _votes = JSON.parse(fs.readFileSync(`./lib/vote/${from}.json`))  
         let fil = vote.map(v => v.participant)
-        let id_vote = sender ? sender : '6285751056816@s.whatsapp.net'
+        let id_vote = sender ? sender : '6282245255702@s.whatsapp.net'
         if(fil.includes(id_vote)) {
         return mentions('@'+sender.split('@')[0]+' Anda sudah vote', fil, true)
         } else {
@@ -352,8 +352,9 @@ Prefix : 「 MULTI-PREFIX 」
 *</OWNER>*
 ► _${prefix}off_
 ► _${prefix}on_
-► _${prefix}status_
-
+► _${prefix}status
+► _${prefix}sc
+► _${prefix}owner
 *</MAKER>*
 ► _${prefix}sticker_
 ► _${prefix}swm_ <author|packname>
@@ -362,7 +363,7 @@ Prefix : 「 MULTI-PREFIX 」
 ► _${prefix}emoji_
 
 *</CONVERT>*
-► _${prefix}toimg_
+► _$prefix}toimg_
 ► _${prefix}tomp3_
 ► _${prefix}tomp4_
 ► _${prefix}slow_
@@ -434,6 +435,11 @@ Prefix : 「 MULTI-PREFIX 」
 ► _${prefix}delvote_
 ► _vote_
 ► _devote_
+
+*</GRUOUP>*
+► _${prefix}linkgrup_
+► _${prefix}kick_
+► _${prefix}add_
 
 ❏ *SELF-BOT* ❏`
         	fakestatus(menu)
